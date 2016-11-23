@@ -1,0 +1,113 @@
+{{{
+#!html
+<h1 style="text-align: center;">
+ <a style="position: absolute; left:  0; font-size: 50%;" href="3.2.27">3.2.27 &larr;</a>
+  What's new in 3.2.28
+ <a style="position: absolute; right: 0; font-size: 50%;" href="3.2.29">&rarr; 3.2.29</a>
+</h1>
+}}}
+
+== User Interface changes ==
+
+ * Failure of "reinstall provides" now shows the correct packages.
+ * The data for command line, in history and yumdb, now contains all options (eg. --security).
+ * Add yum config. and enabled repos. and yum history additional data.
+ * Show a message when a user tries to run history commands, and history isn't readable.
+ * Cleanup the message for "do you want to install key XYZ".
+ * Don't allow users to remove the running kernel.
+ * Allow reinstall of installonly packages.
+ * Cleanup print of packages and their states in "history info".
+ * Save installed_by and changed_by in the yumdb, and output in info -v.
+ * Cleanup printing of install/downgrade/reinstall.
+ * Don't do chain removals, when using downgrade and deps. are removed.
+ * Add exit_on_lock config. option (or --setopt).
+ * Add cmdline to history.
+ * Add rpmdb problems to history.
+ * Add skip broken packages to history.
+ * Help users out when repos. aren't enabled in clean/etc.
+ * Can pass multiple arguments to "yum check".
+ * Ignore "yum check" problems with packages being removed.
+ * Add total remove size, when just doing removes.
+ * Move protect-packages plugin into core, defaults to: "yum, glob:/etc/yum/protected.d"
+ * Add glob: syntax to all options which are lists.
+ * Add '''simple''' unfilled requirements test, when we compare providers.
+ * Add deselections to install, update, downgrade, remove (Eg. install @blah -foo). 
+ * Allow "nocontexts" in conf.tsflags, if supported in rpm.
+ * Add yum check sub-commands (included in "all"): obsoleted and provides.
+ * Add a header to the automatic yum check output
+ * Add /etc/yum/vars
+ * Allow: "yum version group blah" to just output the version for the blah version group.
+ * Users can export TMPDIR to specify an alternate directory to use for non-root caches.
+ * Add --setopt option to the cli.
+ * Add the groupremove_leaf_only option.
+ * Fix the "user" column width for history summary.
+ * Put "EE" in history list, if the transaction had error output.
+ * Add provides data to dep. failure messages.
+ * Return errors on "yum install" if no packages could be found.
+ * Add distro-sync command.
+
+== Significant bugfixes ==
+
+ * Fix for when /proc isn't mounted.
+ * Fix gpg key removal when the key has a space in it's provides.
+ * Don't record transactions run with RPMTRANS_FLAG_TEST.
+ * Don't install pkgs. which are obsoleted _only_ by installed pkgs.
+ * More random unicide ... history problems, and comparing provides.
+ * Don't traceback on empty transactions in depsolver.
+ * We'll now install local pkgs. which only obsolete something.
+ * Speedup large list output, like "yum list installed".
+ * Fix for compare_providers() skipping packages that are installed and == version.
+ * Fix packages excluded after bing put in "yb.up".
+ * Fix adding pkgExcluders after packages have been loaded (versionlock/etc.)
+ * Get the arch. correct when installing new multilib pkgs. that are obsoleters of what was requested.
+ * Fix weird, and very old, depsolving bug with requirements of requirements.
+ * Move the yum rpmdb indexes to /var/lib/yum/rpmdb-indexes ... helps mock.
+ * Setup the permissions on the yum.log file.
+ * Fixes for double prepending installroot (preupgrade/etc.).
+ * Catch the new 4.8.0 can't open rpmdb error.
+ * Depsolving problems where obsoleting packages don't provide the thing we required from their obsoletee.
+ * Workaround MD reget problems.
+ * Don't traceback on subkey only GPG keys.
+ * Don't traceback for normal users, when they can't open the history DB.
+ * syslog configuration.
+ * Fix search for keys=True API users, like PK.
+
+== Resource improvement changes ==
+
+ * If yumdb entries are the same, hardlink them instead of writing new versions.
+ * If yumdb entries are hardlinked then cache based on dev/inode.
+ * Optionally collapse libc provides/requires.
+ * Big speedup for "yum remove".
+ * Don't do rpmdb checks, when history isn't configured.
+ * Enable conditional "big update" speedup, disable if a using a package from a repo. without pkgfiles index.
+ * Speedup returnNewestByName(), for at least old repodiff.
+ * Add caches for multiple .install/.remove calls.
+
+== API changes ==
+
+ * Fix API break for rpm transaction errors (Eg. disk full).
+ * Add plugin hook/callback for pkg.verify(), also add objects so data can be changed.
+ * Add plugin hook for compare_providers.
+ * Add .history.write_addon_data().
+ * Add historyend and historybegin plugin hooks.
+ * Save installed_by and changed_by in the yumdb.
+ * Add caching to getloginuid().
+ * Add pre/post verifytrans plugin hooks.
+ * Fix for rpm 4.8.0 flags being long, not int.
+ * Catch the new 4.8.0 can't open rpmdb error.
+ * Remove all internal uses of has_key, for py3k compat.
+ * Add tsInfo.deselect() for anaconda/kickstart.
+ * Add pkg.obsoletedBy().
+ * Add primary_only arg. to returnFileTypes().
+ * Add /etc/yum/vars.
+ * Add provides_for as an arg. to .install().
+ * Add .readable to the history object.
+
+=== Developer stats. ===
+
+{{{
+3.2.28 - 271 commits: Fri Jul 30 16:28:35 2010 -0400
+
+54 files changed,  13,765 insertions(+),   3,450 deletions(-)
+33 files changed,   3,146 insertions(+),     892 deletions(-) [yum rpmUtils bin *.py]
+}}}

@@ -1,0 +1,31 @@
+= this is a draft for a yum history (of transactions) database =
+the idea is to keep track of all the info of what happened during a  transaction, what caused it, the commands which invoked it, the state of things when it was invoked, etc.
+Giant patch currently available: http://james.fedorapeople.org/yum/patches/history-BIG.patch ... also in my yum git repo. (history branch).
+
+== things current history patch does ==
+ * yum nevra+pkgId
+ * nevra + checksums in the rpmdb before the ts (kind of, uses rpmdb version).
+ * nevra + checksums after the ts
+ * package dependencies/relationships within the ts?
+   * the proposed actions in the ts
+   * the proposed actions in the ts broken down into install/remove te's (we kind of save the TS_STATE)
+ * result/errorcode  of the ts run
+ * getloginuid() -- something so that different users doing "sudo yum blah" could be differentiated?
+ * timestamp of the operation
+ * duration
+ * undo/repeat API and commands
+ * list/info/summary commands
+
+== things current history patch almost does ==
+ * all the enabled plugins (nevra+pkgId) -- [We need an API to allow things to add packages to the "transaction performed with packages" list]
+
+
+== things to maybe track ==
+ * yum.conf.*
+ * all the repos enabled and timestamps/checksums of their repomd.xml files
+ * all the cli options (if any)
+ * any/all logging output from the ts (tricksy)
+
+This is part of the YumProposedDbs page
+
+Updated: 2009-08-28

@@ -1,0 +1,295 @@
+= Performance for yum =
+
+This is a page documenting benchmark results within yum, over various releases. Also some comparison to rpm/etc. There is no comparison to other package managers, because that's [http://illiterat.livejournal.com/7412.html "much harder" and not that useful].
+
+== Quick summary for all versions ==
+
+Note that this has been tested at somewhat random times, and features have been added so these aren't 1-1 comparable for what they are doing. Also sqlite/python changes have made a difference, as has the size of the repo metadata (as Fedora gets bigger). Also the same machine did not run 3.0.1 and 3.2.27+, so there are some HW differences (but that doesn't make a big difference for these things).
+Also the "big lie" with benchmarks like this, for all packaging systems, is that we are operating on at least 200MB of data on disk so if an IO has to be done (first boot, or just not in page cache) the numbers are drastically different.
+
+
+||'''op'''||'''3.0.1 (2006-11-01)'''||'''3.2.1 (2007-06-21)'''||'''3.2.8+ (2007-12-03)'''||'''3.2.16+ (2008-02-27)'''||'''3.2.24+ (2009-09-28)'''||'''3.2.27+ (2010-06-04)'''
+||'''noop'''||0.3||0.4||4.5||0.9||0.6||0.4
+||'''noop-ts'''||n/a||n/a||n/a||n/a||0.6||0.6
+||'''list ustr'''||20.4||5.8||6.3||1.8||1||0.6
+||'''search ustr'''||23.3+-7||4.3||5.3||1.8||1.3||1.2
+||'''search python'''||18.2+-2||9.8||9.2||2.3||2.5||2.5
+||'''list python\*'''||28 +-6||6||6.4||1.9||1.4||1.1
+
+
+== Comparison between latest "yum list", repoquery --installed and rpm ==
+
+Yum is never going to be '''faster''' than rpm, because we'll always be doing a bit more work. We can try to make the difference as small as possible though. This information tries to show how close we are, and where the extra time goes.
+
+We don't want to measure gnome-terminal etc. time, so for -qa we'll pipe everything to "wc -l".
+
+=== rpm ===
+
+Most people look at the obvious:
+
+{{{
+% time rpm -qa | wc -l
+1886
+rpm -qa  2.16s user 0.10s system 96% cpu 2.337 total
+% time rpm -q yum
+yum-0:3.2.27-13.fc14.noarch
+rpm -q yum  0.01s user 0.02s system 92% cpu 0.034 total
+}}}
+
+...and assume that rpm is broken when implementing -qa. The truth is that rpm does a lot of unnecessary checking for a simple list of packages. Turning that off we get:
+
+{{{
+% time rpm --nodigest --nosignature -qa | wc -l
+1886
+rpm --nodigest --nosignature -qa  0.25s user 0.09s system 93% cpu 0.362 total
+}}}
+
+...which is as good as yum is ever going to get (-q is not significantly affected).
+
+=== rpm-python ===
+
+Obviously running python instead of C has '''some''' overhead, as do the conversions needed for the rpm-python bindings. But they aren't that big:
+
+{{{
+% cat /tmp/r-p.py
+#! /usr/bin/python -tt
+
+import rpm
+import sys
+
+ts = rpm.TransactionSet()
+ts.setVSFlags((rpm._RPMVSF_NOSIGNATURES|rpm._RPMVSF_NODIGESTS))
+
+if len(sys.argv) > 1:
+    mi = ts.dbMatch('name', sys.argv[1])
+else:
+    mi = ts.dbMatch()
+
+for hdr in mi:
+    print '%s-%s:%s-%s.%s' % (hdr['name'],
+                              hdr['epochnum'], hdr['version'], hdr['release'],
+                              hdr['arch'])
+% time python /tmp/r-p.py | wc -l
+1886
+python /tmp/r-p.py  0.24s user 0.10s system 94% cpu 0.357 total
+% time python /tmp/r-p.py yum
+yum-0:3.2.27-13.fc14.noarch
+python /tmp/r-p.py yum  0.04s user 0.03s system 95% cpu 0.070 total
+}}}
+
+...as you can see running -qa is actually fractionally faster from the bindings.
+
+== Somewhat more realistic rpm-python ==
+
+Obviously the above rpm-python code isn't really comparable with yum, as yum is an API and you can do many things with it. We can get somewhat closer by creating python "class" objects for each package in the rpmdb, sort them all and filter out the gpgkeys. And then print them:
+
+{{{
+% cat /tmp/r-p-api.py
+#! /usr/bin/python -tt
+
+import rpm
+import sys
+
+ts = rpm.TransactionSet()
+ts.setVSFlags((rpm._RPMVSF_NOSIGNATURES|rpm._RPMVSF_NODIGESTS))
+
+if len(sys.argv) > 1:
+    mi = ts.dbMatch('name', sys.argv[1])
+else:
+    mi = ts.dbMatch()
+
+class NPkg:
+    def __init__(self, hdr):
+        for key in ('name', 'epochnum', 'version', 'release', 'arch'):
+            setattr(self, key, hdr[key])
+    def __str__(self):
+        return '%s-%s:%s-%s.%s' % (self.name,
+                                   self.epochnum, self.version,
+                                   self.release,
+                                   self.arch)
+    def __cmp__(self, other):
+        return cmp(self.name, other.name)
+
+for pkg in sorted([NPkg(hdr) for hdr in mi]):
+    if pkg.name == 'gpg-pubkey':
+        continue
+    print pkg
+% time python /tmp/r-p-api.py | wc -l
+1876
+python /tmp/r-p-api.py  0.31s user 0.08s system 96% cpu 0.410 total
+% time python /tmp/r-p-api.py yum
+yum-0:3.2.27-13.fc14.noarch
+python /tmp/r-p-api.py yum  0.03s user 0.03s system 95% cpu 0.069 total
+}}}
+
+...as you can see, we are still very close to direct rpm time and we are starting to "do something useful".
+
+=== yum API ===
+
+Yum provides a non-trivial API, hence all the programs that use it, however that causes some overhead with current python implementations:
+
+{{{
+% time sudo python -c 'import yum'
+sudo python -c 'import yum'  0.12s user 0.13s system 95% cpu 0.262 total
+% time sudo python -c 'import yum; yum.YumBase()'
+sudo python -c 'import yum; yum.YumBase()'  0.12s user 0.12s system 93% cpu 0.265 total
+% time sudo python -c 'import yum; yum.YumBase().conf'
+Loaded plugins: presto
+sudo python -c 'import yum; yum.YumBase().conf'  0.17s user 0.15s system 97% cpu 0.328 total
+}}}
+
+...the first version does **nothing** but find the all the modules for the yum API. This is roughly equivalent to linking when compiling C (where it's then basically free at runtime), and is probably the main thing most people are thinking of if they say python is slow. The last version is minimal overhead for using the yum API, as this creates a single object and loads the main yum.conf configuration.
+
+So if we take the r-p-api code and import yum, and use yum.packages.YumInstalledPackage() in place of NPkg() we get:
+
+{{{
+% time ./rpm-python-list.py | wc -l
+1876
+./rpm-python-list.py  0.52s user 0.28s system 96% cpu 0.830 total
+wc -l  0.00s user 0.00s system 0% cpu 0.829 total
+% time ./rpm-python-list.py yum
+yum-3.2.27-13.fc14.noarch
+./rpm-python-list.py yum  0.12s user 0.12s system 89% cpu 0.267 total
+}}}
+
+...however not all of the package data is stored in rpm now, so let's setup yumdb and get "from_repo" for the packages:
+
+{{{
+% time ./rpm-python-list.py | wc -l
+1876
+./rpm-python-list.py  0.68s user 0.47s system 97% cpu 1.184 total
+% time ./rpm-python-list.py yum
+yum-3.2.27-13.fc14.noarch @rawhide
+./rpm-python-list.py yum  0.12s user 0.12s system 90% cpu 0.271 total
+}}}
+
+...combining those gives us:
+
+{{{
+% time sudo python -c 'import sys,yum; list(sys.stdout.write("%s\n" % pkg) \
+                                            for pkg in sorted(yum.YumBase().rpmdb.returnPackages()))' | wc -l
+1877
+sudo python -c   0.69s user 0.24s system 96% cpu 0.964 total
+% time sudo python -c 'import sys,yum; list(sys.stdout.write("%s\n" % pkg) \
+                                            for pkg in sorted(yum.YumBase().rpmdb.returnPackages(patterns=["yum"])))'
+Loaded plugins: presto
+yum-3.2.27-13.fc14.noarch
+sudo python -c   0.18s user 0.14s system 95% cpu 0.335 total
+% time sudo python -c 'import sys,yum; list(sys.stdout.write("%s %s\n" % (pkg, pkg.ui_from_repo)) \
+                                            for pkg in sorted(yum.YumBase().rpmdb.returnPackages()))' | wc -l
+1877
+sudo python -c   0.83s user 0.61s system 97% cpu 1.469 total
+% time sudo python -c 'import sys,yum; list(sys.stdout.write("%s %s\n" % (pkg, pkg.ui_from_repo)) \
+                                            for pkg in sorted(yum.YumBase().rpmdb.returnPackages(patterns=["yum"])))'
+Loaded plugins: presto
+yum-3.2.27-13.fc14.noarch @rawhide
+sudo python -c   0.16s user 0.16s system 94% cpu 0.337 total
+}}}
+
+...this is basically the minimal limit for yum API users.
+
+=== repoquery ===
+
+repoquery is a real command, and has it's own argument parsing etc. So while the overhead is not noise, it's not terrible:
+
+{{{
+% time sudo repoquery --installed -qa | wc -l
+1876
+sudo repoquery --installed -qa  0.91s user 0.23s system 98% cpu 1.147 total
+% time sudo repoquery --installed -qa --qf '%{nevra} %{ui_from_repo}' | wc -l
+1876
+sudo repoquery --installed -qa --qf '%{nevra} %{ui_from_repo}'  1.16s user 0.60s system 98% cpu 1.795 total
+% time sudo repoquery --installed -q yum         
+yum-0:3.2.27-13.fc14.noarch
+sudo repoquery --installed -q yum  0.25s user 0.15s system 97% cpu 0.417 total
+% time sudo repoquery --installed -q yum --qf '%{nevra} %{ui_from_repo}'
+yum-0:3.2.27-13.fc14.noarch @rawhide
+sudo repoquery --installed -q yum --qf '%{nevra} %{ui_from_repo}'  0.25s user 0.15s system 96% cpu 0.421 total
+}}}
+
+=== yum ===
+
+yum does a **lot** more work, including nicer layout and looking to see if packages have updates/etc. this affects huge output like "yum list installed" a lot. So there is significant overhead over plain repoquery:
+
+{{{
+% time sudo yum list installed | wc -l
+1892
+sudo yum list installed  1.04s user 0.61s system 97% cpu 1.696 total
+wc -l  0.00s user 0.00s system 0% cpu 1.695 total
+% time sudo yum list installed yum
+Loaded plugins: aliases, keys, noop, presto, security, tmprepo, ttysz, verify
+Installed Packages
+yum.noarch                        3.2.27-13.fc14                        @rawhide
+sudo yum list installed yum  0.34s user 0.28s system 97% cpu 0.642 total
+% time sudo yum list installed yum --color=off
+Loaded plugins: aliases, keys, noop, presto, security, tmprepo, ttysz, verify
+Installed Packages
+yum.noarch                        3.2.27-13.fc14                        @rawhide
+sudo yum list installed yum --color=off  0.18s user 0.17s system 96% cpu 0.361 total
+}}}
+
+== summary of comparison for -qa ==
+
+||command for all packages||time||
+||rpm -qa||2.337||
+||rpm --nodigest --nosignature -qa||0.362||
+||minimal-rpm-python||0.357||
+||basic-rpm-python||0.410||
+||yum-pkg||0.830||
+||yum-API||0.964||
+||yumdb-pkg||1.184||
+||yum-API+yumdb||1.469||
+
+||repoquery||1.147||
+||repoquery+yumdb||1.795||
+||yum list installed||1.696||
+
+== summary of comparison for -q yum ==
+
+||command to query yum (+single yumdb info)||time||
+||rpm -q yum||0.034||
+||minimal rpm-python yum||0.070||
+||basic-rpm-python yum||0.069||
+||yum-pkg yum||0.267||
+||yumdb-pkg yum||0.271||
+||yum-API yum||0.335||
+||yum-API+yumdb yum||0.337||
+
+||yum list installed yum --color=off||0.361||
+||repoquery yum||0.417||
+||repoquery yum+yumdb||0.421||
+||yum list installed yum||0.642||
+
+== Comparison between "yum install/remove", rpm ==
+
+For a long time yum had been "much worse" than rpm for install/remove commands. Some of that was due to general fixes, but it also generally has got less love because any difference in speed was only really noticeable with small numbers of small packages (otherwise the I/O from the install/remove vastly outweighs any other part of the operation).
+
+And again, yum has to do a non-trivial amount more work than plain rpm, as yum keeps a detailed history log and it's own yumdb.
+
+These timings were performed on a virt-machine (against the "zint" package -- ~250k, runs ldconfig in %post and %postun):
+
+||'''command'''||'''version'''||'''operation'''||'''time''' (seconds)||
+
+
+||rpm||4.8.1-2||install||2.0||
+||rpm||4.8.1-2||remove||1.5||
+
+||yum||3.2.25-1||install||7.0||
+||yum||3.2.25-1||remove||5.5||
+
+||yum||3.2.28-3||install||6.5||
+||yum||3.2.28-3||remove||4.0||
+||yum||3.2.28-8||install||4.0||
+||yum||3.2.28-8||remove||3.0||
+||yum||3.2.28-8||localinstall||3.2||
+||yum (no history)||3.2.28-8||install||3.5||
+||yum (no history)||3.2.28-8||remove||2.4||
+||yum (no history)||3.2.28-8||localinstall||2.8||
+||bare-rpm-python-erase.py||0||remove||1.0||
+||echo no | yum||3.2.28-3||install||2.5||
+||echo no | yum||3.2.28-3||remove||1.5||
+||echo no | yum||3.2.28-8||install||1.5||
+||echo no | yum||3.2.28-8||remove||0.5||
+||echo no | yum||3.2.28-8||localinstall||0.6||
+
+...note that for all the operations except the "echo no" variants, there could be a non-trivial delay due to IO stalls.

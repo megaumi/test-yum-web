@@ -1,0 +1,111 @@
+= Programming with Yum in 5 minutes, or so =
+
+There are a lot of lines of code in yum, and it can be somewhat intimidating at first glace. However a significant amount of effort has been made to make simple things easy, and the hard things not so hard. The start of any code using yum, will almost certainly have these three lines (and always the first and last one :).
+{{{
+    
+    import os
+    import sys
+    import yum
+}}}
+
+Those lines just tell python, you'd you'd like to be able to use the yum code, and some stuff for the OS. Next the first bit of real code, and something which is also in almost every piece of code using yum:
+
+{{{
+    yb = yum.YumBase()
+}}}
+
+This creates a yum instance, that you can work with. Then one more piece, that is very useful:
+{{{
+    yb.setCacheDir()
+}}}
+
+This tells the yum instance to work as a normal user as well as root, as much as it can do (for instance it won't be able to alter data in the rpmdb, or the yumdb).
+
+Now we have a real yum object that we can do things with, the three most useful parts to access are pkgSack, rpmdb and repos. The first two basically act the same, but rpmdb performs queries based on the installed packages on the local machine and pkgSack performs them against all the enabled repositories (which are normally just URLs to resources over the network). The repos attribute is almost always used for one of three things, calling repos.enableRepo(), repos.disableRepo() and less often repos.listEnabled(). The latter for if you need to set/override some specific configuration for the repos.
+
+The pkgSack and rpmdb attributes have a fairly large number of functions you can call, most of which return "package objects" these are the main things you work with most in yum code. Probably the most useful functions to get those package objects are: searchNevra(), returnPackages() and searchPrimaryFields(). There are also some optimized varients like, searchNames() and returnNewestByNameArch(). Some examples would be:
+Simple version of "yum list" command
+{{{
+   # Get the repository package objects matching the passed arguments
+   pkgs = yb.pkgSack.returnNewestByNameArch(patterns=sys.argv[1:])
+   
+   for pkg in pkgs:
+       print "%s: %s" % (pkg, pkg.summary)
+}}}
+Simple stats. gathering from installed packages
+{{{
+   # Find the ten biggest installed packages
+   pkgs = yb.rpmdb.returnPackages()
+   pkgs.sort(key=lambda x: x.size, reverse=True)
+   print "Top ten installed packages:"
+   done = set()
+   for pkg in pkgs:
+       if pkg.name in done:
+           continue
+       done.add(pkg.name)
+       print "%s: %sMB" % (pkg, pkg.size / (1024 * 1024))
+       if len(done) >= 10:
+           break
+
+}}}
+
+Slightly more advanced topics
+
+After playing with yum code for a little bit, you'll probably experience a function which you might think would return a "package object" but doesn't returning a tuple of data instead. The two common tuples within yum are the "package tuple" and the "dependency tuple" which are:
+
+{{{
+   # Pacakge tuple:
+   (pkg.name, pkg.arch, pkg.epoch, pkg.version, pkg.release)
+   # Dependency (or the Provides/Requires/Conflicts/Obsoletes (PRCO)) tuple:
+   (pkg.name, 'EQ', (pkg.epoch, pkg.version, pkg.release))
+}}}
+
+After that you'll probably start playing with the "transaction info" (yb.tsInfo), and the "install", "update" and "remove" functions of !YumBase. So you can change the system as well as query it. Then you'll want to present your information in a way that looks as good as a normal yum command (using the "internal" output module), although that is less unsupported. A somewhat useful example might be:
+"Clever" way to manually update almost all the metadata for any usable repos. installed
+{{{
+   #! /usr/bin/python -tt
+   
+   import os
+   import sys
+   import yum
+   
+   yb = yum.YumBase()
+   
+   yb.conf.cache = os.geteuid() != 0
+   
+   from urlgrabber.progress import TextMeter
+   
+   # Use the "internal" output mode of yum's cli
+   sys.path.insert(0, '/usr/share/yum-cli')
+
+   import output
+   
+   # Try not to be annoying if run from cron etc.
+   if sys.stdout.isatty():
+       yb.repos.setProgressBar(TextMeter(fo=sys.stdout))
+       yb.repos.callback = output.CacheProgressCallback()
+       yumout = output.YumOutput()
+       freport = ( yumout.failureReport, (), {} )
+       yb.repos.setFailureCallback( freport )
+    
+   # Enable all the repos. a user might want to use and sync. the metadata.
+   # Note this needs to be done before the repositories are used.
+   for name in ('updates-testing', 'rawhide', 'livna', 'adobe-linux-i386',
+                'brew', 'rhts', 'koji-static'):
+       yb.repos.enableRepo(name + ',')
+   
+   for repo in yb.repos.listEnabled():
+       yb.repos.enableRepo(repo.id + '-source'    + ',')
+       yb.repos.enableRepo(repo.id + '-debuginfo' + ',')
+   yb.repos.doSetup()
+   
+   for repo in yb.repos.listEnabled():
+       repo.mdpolicy        = 'group:main'
+       repo.metadata_expire = 0
+       repo.repoXML
+   # This is somewhat "magic", it unpacks the metadata making it usable.
+   yb.repos.populateSack(mdtype='metadata', cacheonly=1)
+   yb.repos.populateSack(mdtype='filelists', cacheonly=1)
+}}}
+
+Hopefully that will go some way to giving you an overview of how you can use the yum API to perform queries or tasks that would otherwise be very difficult. For further information you can use the help feature of ipython to look at docstrings for the variuos components, and even use the TAB complete feature of ipython to see all the available attributes of packages, repos, pkgSack or the !YumBase itself.

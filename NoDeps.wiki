@@ -1,0 +1,25 @@
+= Nodeps and Force =
+
+Rpm offers command line options --nodeps and --force. They are intended to allow the admin to put pkgs in place despite conflicting files, unresolved dependencies or just about anything else.
+
+Yum does not implement these options in any way due to the destructive nature of what these options are capable of doing.
+
+
+Why are --nodeps and --force bad for yum:
+ * yum is a package manager and automatic dependency solver. if you use --nodeps it is no longer solving dependencies it is the equivalent of rpm2cpio except it is also updating the rpmdb with broken information
+ * --nodeps is only used when a package or system is badly broken. As a general rule if you find you cannot put the screw in the hole with a screw driver you should not go get a hammer. 
+ * --force tells rpm - if there are any pkg or file conflicts just blow them all away with what I'm giving you. Again - not a good idea if you want to keep your system running well. It's like gardening with a backhoe.
+ * When you go to update yum relies on an assumption that the rpmdb is roughly correct. We've added functionality to warn you when we notice your rpmdb does not have dependency closure - but it is likely that using --nodeps and --force will screw up updates.
+
+If you find you have no way out and you NEED --nodeps and/or --force - well - this is why they are available in rpm. 
+If you are knowledgeable enough to know you need ignore dependency resolution and force the files into place then you should also be knowledgeable enough to know how to use them with rpm.
+
+
+What to use instead:
+ * yum shell: the yum shell will let you remove pkg1 and install pkg2  in a single transaction so you don't have to use --nodeps as a hold-over to swap two conflicting pkgs out
+ * yum reinstall: if you just need to reinstall all the files of an installed pkg just use yum reinstall
+ * yum downgrade: gotta go back to an older version of a pkg b/c the new one is broken? Yum downgrade can do that.
+ * package-cleanup: package-cleanup is a yum-util to help you sort out what things might be terribly wrong with your system
+ * yum history redo/undo: If the last transaction hosed things up and you need to try it all over again or maybe you just want to get rid of it - try the YumHistory commands 'undo' and 'redo'
+
+ 

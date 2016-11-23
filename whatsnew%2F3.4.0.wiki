@@ -1,0 +1,64 @@
+{{{
+#!html
+<h1 style="text-align: center;">
+ <a style="position: absolute; left:  0; font-size: 50%;" href="3.2.29">3.2.29 &larr;</a>
+  What's new in 3.4.0
+ <a style="position: absolute; right: 0; font-size: 50%;" href="3.4.1">&rarr; 3.4.1</a>
+</h1>
+}}}
+
+== User Interface changes ==
+
+ * Don't spam usage info. for missing arguments.
+ * Add history_list_view option, and change the default to 1user-cmds.
+ * Warn about weird curl/NSS basename checking of cert. files.
+ * Add update-to and upgrade-to.
+ * Add "distro-sync full".
+ * Cleanup deplist output, changes behaviour on --showduplicates and -v now.
+ * Allow only some GPG keys to be installed.
+ * Pass any arguments to check-update to the obsoletes data, as well as the update data.
+ * Fix printing the obsoleters message.
+ * "remove foo" doesn't look at repodata for "maybe you meant".
+ * Store the transaction in the history as the "saved_tx" addon data.
+ * Show from_repo is history output (tries loading repos. in some cases)
+ * Auto. import CA keys we've agreed to use for other repos.
+ * Show the first URL we'll try in repolist -v.
+ * Stop checking for the lock, if we'll never be able to create it.
+ * config(noreplace) on the yum-cron files, as they can be altered by the user.
+ * SKIPBROKEN prefix added to it's debug output.
+
+== Significant bugfixes ==
+
+ * Fix dropCachedDataPostTransaction() generating the wrong rpmdbv's on reinstall.
+ * Work around people changing their umask (for "public" data like yumdb).
+ * Fix some more bugs in --skip-broken.
+ * Make -- work with first pass options parsing.
+ * Allow RHEL-5 yum-utils/yumdownloader to work again.
+ * Deal with yumvars in config. files, when saving.
+ * Don't do the "normal" protected_packages processing on kernel's.
+ * Fix variable name typo in verify.
+ * Allow 32bit clients to download/checksum > 2GB package files.
+ * ts.check() is not optional anymore, due to rpmlib() deps. (among others).
+ * Hide invalid XML in updateinfo.
+ * Write out the sourcerpm tag, even if empty, for old yum-2.4.x clients.
+ * Fix bugs in persistdir setup.
+ * Fix testcase snafu.
+
+== Resource improvement changes ==
+
+ * Don't keep hdr's around for installed packages, ever.
+ * Changes to the layer interacting with rpm transactions to avoid memory usage.
+
+== API changes ==
+
+ * Add API keyword for update-to and upgrade-to functionality.
+ * Add a new opt-in callback mode, for the rpm transaction using API.
+
+=== Developer stats. ===
+
+{{{
+3.4.0 - 107 commits: Thu Apr 14 16:50:06 2011 -0400
+
+25 files changed,  1,886 insertions(+),    468 deletions(-)
+15 files changed,    724 insertions(+),    403 deletions(-) [yum rpmUtils bin *.py]
+}}}

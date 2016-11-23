@@ -1,0 +1,84 @@
+= YumDB =
+
+Since yum 3.2.26 yum has started storing additional information about installed packages in a location outside of the rpmdatabase. None of the information stored there is critical to performing its function but it enhances the user experience and makes it possible to know more about the context in which a package was installed.
+
+== Format ==
+the yumdb is a simple flat file database. The filesystem creates a simple tree structure:
+
+{{{
+   /var/lib/yum/yumdb/
+                      p/
+                        $checksum-packagename-$ver-$rel.$arch/keyname
+}}}
+
+Each keyname is a file and the contents of that file are the values.
+
+'''Note''' since 3.2.28 hardlinks are allowed between different keys, this saves on load time and storage but means that if you try to change the data using a text editor it'll probably change more than you want it to.
+
+=== Why not a "real" database ===
+
+The two main operations that yum uses the yumdb for are:
+
+ * Given an installed package XYZ-2-1.noarch, get the value of yumdb key FOO. (Eg. yumdb get from_repo yum).
+ * Given an installed package XYZ-2-1.noarch, set the value of yumdb key FOO to BAR. (Eg. yumdb set from_repo special yum).
+
+...using the filesystem allows both those operations to be fast and atomic. It is unlikely to be significantly better to use any other approach for the two main uses, however the most common suggestions "sqlite" and a key/value store (like "libdb*") fail at least one of those tests.
+Using the filesystem makes it easy to:
+
+ * Keep all the yum code simple.
+ * Have isolation. Eg. Something goes wrong and the "reason" key for package XYZ is broken, nothing else should be affected.
+ * Have a knowledgeable sysadmin fix any problems.
+ * Have interoperability (it's trivial to to the get/set operations from any language without having to use the yum API -- although we still don't recommend it).
+
+There are two minor downsides to using the filesystem:
+
+ * Searching is not fast (Eg. yumdb search from_repo updates-testing). The main thing to realize here is that no yum tool currently needs to perform operations like this.
+ * Load all keys of XYZ from all installed packages. The only usecase here is loading the checksum data to calculate rpmdb-versions, on install/etc. ... however we need a separate index for this anyway, as we when need to know this information quickly we don't want to load the packages at all.
+
+== Stored information ==
+
+One of the desires for the yumdb is that users/plugins/etc. could store almost arbitrary information in the yumdb, and have it attached to specific packages. So listing a "canonical" set of keys is never going to be possible. At some point there may be an API to get a list of "keys that should migrate on a package update", but that isn't in 3.2.29 atm.
+
+So here's a list of all the items that should be set for every package (from yumdb info) from 3.2.29 onwards:
+
+ * from_repo: the name of the repo from which the pkg was installed
+ * from_repo_revision: Repo. revision. Or ctime for a local package.
+ * from_repo_timestamp: Repo. timestamp. Or mtime for a local package.
+ * reason: reason for installing this pkg (user, dep, etc)
+ * releasever: $releasever of the system at the time the pkg was installed (so you can look for pkgs which have lingered across release updates)
+ * installed_by (3.2.28): The loginuid of the user who first installed this package (note that some tools which call yum don't obey loginuid, this not being set is one of many problems that introduces). This doesn't cross Obsoletes.
+ * changed_by (3.2.28): The loginuid of the user who last installed this package.
+
+These are known other keys:
+
+ * checksum_type: The type of the checksum for the installed pkg. Eg. md5, sha1, sha256.
+ * checksum_data: The value of the checksum for the installed pkg.
+ * origin_url (3.2.29): Requires a newer urlgrabber, this is the url that the package was download from.
+ * command_line: The command line used to install this pkg (only set if pkg. installed from a tool that has a command line).
+ * installonly: Not set by yum, but looked at to see if installonly packages should be automatically removed.
+ * group_member (3.2.29+?): Set by yum if a package was installed as part of a "group install" (beta patch).
+
+== Accessing this information ==
+There is a script called 'yumdb' in yum-utils which allows you to access this information:
+
+ * get the repo from which yum-utils was installed:
+    {{{
+       yumdb get from_repo yum-utils
+    }}}
+ 
+ * set a note on the packages 'joe' and 'geany'
+    {{{ 
+       yumdb set note "installed by seth b/c he likes them" joe geany
+    }}}
+  
+  * Dump out all yumdb values about yum and yum-utils:
+    {{{
+       yumdb info yum-utils yum
+     }}}
+
+ 
+== History ==
+Long ago in a galaxy far away known as 2007 - we [http://lists.rpm.org/pipermail/rpm-maint/2007-August/001651.html asked] for the ability to write this kind of data into the rpmdb itself. We asked again in 2009. With no answer from the subject but told informally "no", we decided to implement it in a db outside of the rpmdb. In order to keep
+it flexible we just needed key,value pairs tied to a pkgid.
+
+other info: rpm.org ticket on this subject: [http://rpm.org/ticket/43]

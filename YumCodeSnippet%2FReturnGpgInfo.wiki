@@ -1,0 +1,12 @@
+
+Return the gpg signature info from a package:
+{{{
+#!python
+import yum.packages
+import rpmUtils.transaction
+from rpmUtils.miscutils import getSigInfo
+ts = rpmUtils.transaction.initReadOnlyTransaction()
+lp = yum.packages.YumLocalPackage(ts, '/home/skvidal/yum-3.2.8-1.noarch.rpm')
+
+print getSigInfo(lp.hdr)
+}}}

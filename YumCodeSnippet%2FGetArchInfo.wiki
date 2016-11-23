@@ -1,0 +1,17 @@
+This will get you the arch. information that yum knows about.
+
+{{{
+import rpmUtils.arch
+
+# Directly...
+print '$arch =', rpmUtils.arch.getCanonArch()
+print '$basearch =', rpmUtils.arch.getBaseArch()
+
+import yum
+
+yb = yum.YumBase()
+# Via. yum
+print '$arch =', yb.arch.canonarch
+print '$basearch =', yb.arch.basearch
+
+}}}

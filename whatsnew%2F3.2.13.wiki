@@ -1,0 +1,39 @@
+{{{
+#!html
+<h1 style="text-align: center;">
+ <a style="position: absolute; left:  0; font-size: 50%;" href="3.2.12">3.2.12 &larr;</a>
+  What's new in 3.2.13
+ <a style="position: absolute; right: 0; font-size: 50%;" href="3.2.14">&rarr; 3.2.14</a>
+</h1>
+}}}
+
+== User Interface changes ==
+
+ *   Plugins output
+ *   Disable plugins via. wildcard
+ *   Add cmd: clean expire-cache
+ *   Use rpm's transaction problems data
+ *   Add headers to section headers to search command 
+ *   Add --showduplicates option
+
+== Resource improvement changes ==
+
+ *   Drop cached data, post transaction
+ *   remove old dcobj tracking
+ *  Speedup some glob checking
+ *   Pre-load all requires when depsolving
+ *  Add packagesNewestBy*
+
+== API changes ==
+
+ *  Speedup some glob checking
+ *  Add packagesNewestBy*
+ *   Work with python-sqlite-1.x again.
+
+=== Developer stats. ===
+
+{{{
+3.2.13 -  59 commits: Thu Mar 20 10:29:41 2008 -0400
+26 files changed,  5,362 insertions(+),   529 deletions(-)
+15 files changed,    454 insertions(+),   180 deletions(-) [main]
+}}}

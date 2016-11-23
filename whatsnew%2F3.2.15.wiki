@@ -1,0 +1,48 @@
+{{{
+#!html
+<h1 style="text-align: center;">
+ <a style="position: absolute; left:  0; font-size: 50%;" href="3.2.14">3.2.14 &larr;</a>
+  What's new in 3.2.15
+ <a style="position: absolute; right: 0; font-size: 50%;" href="3.2.16">&rarr; 3.2.16</a>
+</h1>
+}}}
+
+This release was basically broken, use [wiki:whatsnew/3.2.16 yum-3.2.16] instead which was the bugfix release for this release.
+
+== User Interface changes ==
+
+ *   Allow ':' chars in repo id's (SuSE repos need this).
+ *   Manage being behind a protected AP better for mirrorlists.
+ *  Work around so we accept 4 year old metadata (now non-std.)
+ *   Add comma/wildcard support to groups.
+ *   More rpm magic to make C-c work again.
+ *   Don't chop translated names.
+ *   Internal progress bar tweaks to match current urlgrabber.
+ *   Download smallest packages first.
+ *  Add translation names to grouplist/groupinfo.
+ *  Add support for groups with the same name but differen ids.
+ *   Fix anaconda special exceptions.
+ *   Add "obsoleting" message.
+ *  Fix "yum list install / extras" to work again with no args.
+ *  Huge translation fixes, and fixes for for i18n tracebacks.
+ *  Add gaftonmode to turn translations off.
+
+== Resource improvement changes ==
+
+ *   Undo pre-load for requires.
+ *   Don't look for file deps. when we don't have to.
+
+== API changes ==
+
+ *  Add support for groups with the same name but differen ids.
+ *   Fix anaconda special exceptions.
+ *  Fix "yum list install / extras" to work again with no args.
+
+
+=== Developer stats. ===
+
+{{{
+3.2.15 -  82 commits: Wed May 14 17:05:37 2008 -0400
+32 files changed,  4,811 insertions(+), 1,883 deletions(-)
+18 files changed,    474 insertions(+),   238 deletions(-) [main]
+}}}

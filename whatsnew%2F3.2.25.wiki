@@ -1,0 +1,46 @@
+{{{
+#!html
+<h1 style="text-align: center;">
+ <a style="position: absolute; left:  0; font-size: 50%;" href="3.2.24">3.2.24 &larr;</a>
+  What's new in 3.2.25
+ <a style="position: absolute; right: 0; font-size: 50%;" href="3.2.26">&rarr; 3.2.26</a>
+</h1>
+}}}
+
+== User Interface changes ==
+
+ * Verify package now does not report broken symlinks as missing.
+ * Check if excludes are disabled for local packages.
+ * Option mpolicy is now a list, so you can list MD types directly.
+ * Preserve yumdb_info.reason=dep across updates.
+ * Show obsoletes in check-update, if the obsoletes flag is on.
+ * Added yum history command.
+ * Added version-groups, so you can get "rpmdb versions" for for subsets of packages.
+ * Obsoletes of updates win out in compare_providers.
+ * Allow repolist to run without any repodata (as long as not in verbose mode).
+ * Check rpmdb version against last history entry, and complain if they don't match.
+ * Sort reinstall/download output in the transaction output.
+
+== Resource improvement changes ==
+
+ * Drop pkgtup2pkgs cache (introduced in 3.2.24, I think).
+ * Make returnLeafNodes() a faster/smaller.
+ * Special, fast, sqlite queries for "/path/to/*" searches.
+ * Skip broken now does more efficient scanning of packages for updates/obsoletes.
+ * Speedup to rpmdb version generation, when we only want the main version.
+
+== API changes ==
+
+ * Add history classes and APIs.
+ * Add registerPackageName() to plugin classes.
+ * If the lock file can't be created don't raise the generic lockfile error (that's used to mean the file is locked). 
+ * Ability to easily run yum command inside pdb.
+ * Add misc.getloginuid().
+
+=== Developer stats. ===
+
+{{{
+3.2.25 - 116 commits: Wed Oct 14 14:50:40 2009 -0400
+48 files changed,  12,217 insertions(+),   5,243 deletions(-)
+25 files changed,   1,791 insertions(+),     204 deletions(-) [yum rpmUtils bin *.py]
+}}}

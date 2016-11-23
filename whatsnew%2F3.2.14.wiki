@@ -1,0 +1,43 @@
+{{{
+#!html
+<h1 style="text-align: center;">
+ <a style="position: absolute; left:  0; font-size: 50%;" href="3.2.13">3.2.13 &larr;</a>
+  What's new in 3.2.14
+ <a style="position: absolute; right: 0; font-size: 50%;" href="3.2.15">&rarr; 3.2.15</a>
+</h1>
+}}}
+
+== User Interface changes ==
+
+ *   Add code to use "total progress" feature in Fedora urlgrabber
+ *   Fix list available, for newer pkgs than in repos.
+ *   Fix "yum -c" etc. error messages
+ *  Don't need to load repos for "yum list installed foo"
+ *   Make repolist command nicer
+ *   Warn users if repomd is old
+
+== Resource improvement changes ==
+
+ *  Don't need to load repos for "yum list installed foo"
+ *   prco opts.
+ *   Use weakref to avoid circular refs.
+ *   Add dropCachedData() to rpmsack
+ *  Push pkg search down to rpmsack
+ *  Push pkg matching down to rpmsack
+ *   don't create pkgs. for rpm tuple lists
+ *   don't keep all of rpmsack data in core
+
+== API changes ==
+
+ *   Add showdups arg. to "list/info" API.
+ *  Push pkg search down to rpmsack
+ *  Push pkg matching down to rpmsack
+ *   pkg.arch is now always 'src' for .src.rpm
+
+=== Developer stats. ===
+
+{{{
+3.2.14 -  71 commits: Mon Apr 7 23:45:53 2008 -0400
+34 files changed, 11,311 insertions(+), 5,235 deletions(-)
+17 files changed,    626 insertions(+),   400 deletions(-) [main]
+}}}

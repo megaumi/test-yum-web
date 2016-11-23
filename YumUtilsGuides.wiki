@@ -1,0 +1,70 @@
+= Separate Guides for Yum Utils and Plugins =
+
+== Utils ==
+  - debuginfo-install
+        - when to use/why to use
+  - package-cleanup
+	- package-cleanup --leaves/--orphans
+	- package-cleanup --problems
+	- package-cleanup --oldkernels
+  - repo-graph
+        - does anyone use this?
+  - repo-rss
+        - usage example
+  - repoclosure
+        - over to repo tool guide page
+  - repodiff
+        - repo tool guide and distro upgrade reports
+  - repomanage
+        - reference repo tool guide page
+  - repoquery
+        - examples, etc
+  - reposync
+        - reference repo tool guide page
+  - repotrack
+        - need a use case for this that isn't somewhat silly
+  - verifytree
+        - repo tool guide page
+  - yum-builddep
+        - explain what it does
+        - mention/link to mock?
+  - yum-debug-dump
+        - explain it
+        - document the format a bit?
+  - yum-groups-manager
+        - reference groups page
+  - yumdownloader
+        - simple usage cases
+  - yum-complete-transaction
+        - explain what it does
+        - and options
+
+
+== Plugins ==
+  - aliases
+  - allowdowngrade
+  - basearchonly
+  - changelog
+  - downloadonly
+  - fastestmirror
+  - fedorakmod
+  - filter-data
+  - kernel-module
+  - keys
+  - list-data
+  - merge-conf
+  - post-transaction-actions
+  - priorities
+  - protectbase
+  - protect-packages
+  - refresh-updatesd
+  - remove-with-leaves
+  - rpm-warm-cache
+  - security
+  - skip-broken
+  - tmprepo
+  - tsflags
+  - upgrade-helper
+  - verify
+  - versionlock
+

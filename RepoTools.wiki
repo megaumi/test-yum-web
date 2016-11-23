@@ -1,0 +1,62 @@
+= How To Manage Repositories =
+
+== repomanage ==
+ This tool lets you create lists of newer or older packages to pass to other commands. This is useful if you want to tag a specific set
+of packages from a directory structure. Or if you want to remove older packages. It operates on the packages directly and compares the packages by their rpm epoch, version and release.
+
+ Example:
+  {{{
+    repomanage -k2 --old /some/dir | xargs rm -f
+  }}}
+
+   That will list out the older packages in the directory /some/dir, however the '''-k2''' tells it to keep 2 versions back. 
+
+ 
+== reposync ==
+ This tool lets you download an entire remote yum repository or a set of remote repositories. It will also synchronize changes in a repository with a local directory.
+  Examples:
+      Sync all packages from the ’updates’ repo to the current directory:
+      {{{
+      reposync --repoid=updates
+      }}}
+      Sync  only  the  newest packages from the ’updates’ repo to the current directory:
+      {{{
+      reposync -n --repoid=updates
+      }}}
+      Sync  packages  from  the  ’updates’  and ’extras’ repos to the current directory:
+      {{{
+      reposync --repoid=updates --repoid=extras
+      }}}
+      Sync all packages from the ’updates’ repo to the repos directory:
+      {{{
+      reposync -p repos --repoid=updates
+      }}}
+      Sync all repositories into the 'localcache' directory (each repository in its own path):
+      {{{
+      reposync -p localcache
+      }}}
+      Sync all repositories with plugins enabled (useful for the plugins which are required to access repositories):
+      {{{
+      reposync -l 
+      }}}
+
+== verifytree ==
+ If you've just made a repo and you want to verify that everything in that repo is accurate and functional you can run '''verifytree''' to check out all the repodata and packages.
+
+Example:
+   {{{
+$ verifytree /home/skvidal/tmp/empty-repoverifytree /home/skvidal/tmp/empty-repo/
+Checking repodata:
+  verifying repomd.xml with yum
+  verifying filelists checksum
+  verifying primary checksum
+  verifying primary_db checksum
+  verifying other_db checksum
+  verifying other checksum
+  verifying filelists_db checksum
+Checking groups (comps.xml):
+  verifying comps.xml with yum
+  comps file missing or unparseable
+   }}}
+
+

@@ -1,0 +1,8 @@
+Search for which package(s) own a file on the system
+{{{
+#!python
+yb = yum.YumBase()
+pkgs = yb.rpmdb.whatProvides('/boot/vmlinuz-2.6.23.9-85.fc8', None, (None, None,None))
+for pkg in pkgs:
+    print pkg
+}}}

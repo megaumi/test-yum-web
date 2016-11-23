@@ -1,0 +1,30 @@
+{{{
+#!html
+<h1 style="text-align: center;">
+ <a style="position: absolute; left:  0; font-size: 50%;" href="3.2.29">3.2.29 &larr;</a>
+  What's new in 3.2.30
+ <a style="position: absolute; right: 0; font-size: 50%;" href="3.2.31">&rarr; 3.2.31</a>
+</h1>
+}}}
+
+== User Interface changes ==
+
+
+== Significant bugfixes ==
+
+ * Fix testcase snafu.
+
+== Resource improvement changes ==
+
+
+== API changes ==
+
+
+=== Developer stats. ===
+
+{{{
+3.2.30 - 0 commits: Thu Jan 13 00:36:28 2011 -0500
+
+?? files changed,  ??,??? insertions(+),   ?,??? deletions(-)
+?? files changed,   ?,??? insertions(+),     ??? deletions(-) [yum rpmUtils bin *.py]
+}}}

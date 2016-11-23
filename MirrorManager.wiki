@@ -1,0 +1,3 @@
+= Mirror Manager =
+
+Mirror Manager is an external project to make it easier to manage a set of "mirrors" (used via. the metalink and/or the mirrorlist yum repo. configuration variables). Urls are, upstream: https://hosted.fedoraproject.org/mirrormanager/ and for Fedora: http://fedoraproject.org/wiki/Infrastructure/Mirroring

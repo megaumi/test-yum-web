@@ -1,0 +1,106 @@
+= Howto use git with yum =
+This page contains common git usage commands for working on the git repository.
+
+
+== Checkout yum-utils repository ==
+This will checkout the yum utils repository
+{{{
+git clone ssh://yum.baseurl.org/srv/projects/yum/git/yum-utils.git
+cd yum-utils
+}}}
+
+== Daily usage ==
+
+==== Get updates from remote repository ====
+{{{
+git pull
+}}}
+If you have made unpublished changes to your local branch since last '''git pull'''
+then use these commands instead to avoid Merge messages in the log
+{{{
+git fetch
+git rebase origin
+}}}
+
+==== Commit changed files (locally) ====
+{{{
+git commit -a
+}}}
+OR
+{{{
+git commit -a -m "Commit message"
+}}}
+
+==== Push changes to remote repository ====
+{{{
+git push
+}}}
+=== Add new file ===
+{{{
+git add file
+}}}
+
+== Work with branches ==
+
+=== Show local branches ===
+{{{
+git branch
+}}}
+
+=== Show remote branches ===
+{{{
+git branch -r
+}}}
+
+=== Create a local branch tracking remote branch ===
+Create a local '''yum-utils-1_0_X''' branch tracking the remote '''origin/yum-utils-1_0_X''' branch and switch to the '''yum-utils-1_0_X'''
+{{{
+git checkout --track -b yum-utils-1_0_X origin/yum-utils-1_0_X
+}}}
+
+=== Switch to another local branch ===
+Switch to the '''yum-utils-1_0_X''' branch
+{{{
+git checkout yum-utils-1_0_X
+}}}
+
+When you have changed to a local branch there is tracking a remote branch all the '''daily usage''' commands
+will work on that branch.
+
+=== Switch back to master branch ===
+{{{
+git checkout master
+}}}
+
+=== Create a local branch & switch to the branch ===
+{{{
+ git checkout -b branchname
+}}}
+
+=== Change to local branch ===
+{{{
+ git checkout branchname
+}}}
+
+=== Push local branch up to public repository ===
+{{{
+ git push origin branchname
+}}}
+  Yes, this is backward as hell.
+
+== Created a patch with changes from a local branch to master ==
+{{{
+git checkout mylocalbranch
+git diff -p master -- . > my-patch.txt
+}}}
+
+== Apply a patch to current local branch ==
+{{{
+git apply my-patch.txt
+}}}
+
+=== Set a tag for a release ===
+{{{
+git tag -a tagname
+git push --tags
+}}}

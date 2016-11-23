@@ -1,0 +1,23 @@
+== Skip broken ==
+
+Skip broken is a feature in yum to skip packages from the transaction there have dependecy problems or introduce problems to the installed packages
+
+=== How to use ===
+
+add the '--skip-broken' option to the yum command line to activate the skip broken feature.
+
+{{{
+yum update --skip-broken
+}}}
+
+=== Helping to make it better ===
+If there is a situation where skip broken bail out then please check the upstream yum version to help make it better.
+
+{{{
+git clone http://yum.baseurl.org/git/yum.git
+cd yum
+git checkout --track -b yum-3_2_X origin/yum-3_2_X
+sudo ./yummain.py --skip-broken -d7 <the yum command causing troubles>
+}}}
+
+please at a ticket on this site or on http://bugzilla.redhat.com if you are running Fedora

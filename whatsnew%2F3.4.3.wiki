@@ -1,0 +1,32 @@
+{{{
+#!html
+<h1 style="text-align: center;">
+ <a style="position: absolute; left:  0; font-size: 50%;" href="3.4.2">3.4.2 &larr;</a>
+  What's new in 3.4.3
+ <a style="position: absolute; right: 0; font-size: 50%;" href="3.4.4">&rarr; 3.4.4</a>
+</h1>
+}}}
+
+This was a fairly quick bug fix for [wiki:whatsnew/3.4.2 yum-3.4.2] which had a major problem doing non-install transactions in installroots.
+
+== User Interface changes ==
+
+ * Don't show the -c warning due to --installroot.
+ * Check if we have read/write access to the current dir. ... if no chdir() to "/" instead of having rpm fail silently.
+
+== Significant bugfixes ==
+
+ * Fix the rpmtransaction chroot problem from 3.4.2.
+
+== API changes ==
+
+ * Don't call *reposetup plugin callbacks more than once, for group install etc. commands.
+
+=== Developer stats. ===
+
+{{{
+3.4.3 -   8 commits: Tue Jun 28 16:27:17 2011 -0400
+
+ 7 files changed,     99 insertions(+),     10 deletions(-)
+ 6 files changed,     44 insertions(+),     10 deletions(-) [yum rpmUtils bin *.py]
+}}}

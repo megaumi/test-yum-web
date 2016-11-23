@@ -1,0 +1,42 @@
+
+This helps you setup a repo at an arbitrary location, as a user and play with the object. Paste this into a file then run it with ipython for maximum usefulness like:
+
+{{{ ipython ./thisfile.py url://to/my/repo }}}
+
+{{{
+#!python
+
+url = sys.argv[1]
+
+yb = yum.YumBase()
+if not yb.setCacheDir(force=True, reuse=False):
+  print >>sys.stderr, "Can't create a tmp. cachedir. "
+  sys.exit(1)
+
+yb.repos.disableRepo('*')
+
+yb.add_enable_repo('myrepo', [url])
+}}}
+
+...or to do it completely by hand...
+
+{{{
+#!python
+yb = yum.YumBase()
+basecachedir = '/tmp/whereever'
+if not os.path.exists(yb.conf.basecachedir):
+    os.makedirs(yb.conf.basecachedir)
+yb.conf.cache = 0
+url = sys.argv[1] 
+
+yb.repos.disableRepo('*')
+
+newrepo = yum.yumRepo.YumRepository('myrepo')
+newrepo.name = 'myrepo - %s' % url
+newrepo.baseurl = [url]
+newrepo.basecachedir = basecachedir
+newrepo.enablegroups = True
+yb.repos.add(newrepo)
+yb.repos.enableRepo(newrepo.id)
+yb.doRepoSetup(thisrepo=newrepo.id)
+}}}

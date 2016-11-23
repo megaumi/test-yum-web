@@ -1,0 +1,21 @@
+= Problems with performing downgrades =
+
+There are a number of problems with performing downgrades. I'll cover a few of them here:
+
+ * scriptlets are not reversible:
+   rpm scriptlets provide no way to reverse the process(es) they executed. For example a scriptlet (%pre, %preun, %post, %postun, etc)
+   may run echo "Foo foo foo" >> /etc/some/file. There's no way to undo that when you perform a downgrade.
+
+ * downgrading works provided the user data/user config is not modified by
+   an update in a one-way process. 
+    Examples: mysql upgrade from  4->5 will convert a db, but going back the other way won't fly
+              upgrading a desktop application from one version to the next major version modifies config files in such a way but cannot
+              modify them back.
+
+ * There are certain processes which no one is ever going to do the work
+   to make them reversible: lvm1->lvm2, db transitions, udev migration,
+   ext3->ext4.
+
+ * Currently the depsolver doesn't work very well for downgrades, as it can't downgrade extra packages. However you can use tools like yum-debug-dump and yum-debug-restore, which should include all packages needed.
+
+There is now a downgrade command.

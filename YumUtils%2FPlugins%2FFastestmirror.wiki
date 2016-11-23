@@ -1,0 +1,18 @@
+= fastestmirror =
+This plugin sorts each repository's mirrorlist by connection speed
+prior to downloading packages.
+
+
+== How to install ==
+Use the following command to install the fastestmirror plugin
+{{{
+yum install yum-fastestmirror
+}}}
+
+== Examples ==
+
+== Command line options ==
+
+== Config file options ==
+
+== Notes ==

@@ -1,0 +1,44 @@
+{{{
+#!html
+<h1 style="text-align: center;">
+ <a style="position: absolute; left:  0; font-size: 50%;" href="3.2.26">3.2.26 &larr;</a>
+  What's new in 3.2.27
+ <a style="position: absolute; right: 0; font-size: 50%;" href="3.2.28">&rarr; 3.2.28</a>
+</h1>
+}}}
+
+== User Interface changes ==
+
+ * Fix sorting issue with search and pkgtags.
+ * Don't issue warnings when downgrading multilib packages, where both arches aren't installed.
+ * Prefer to overflow the last columns, in column output. So "yum list | fgrep" has a better chance of working.
+ * Explain what to do with "package does not match intended download error" error.
+
+== Significant bugfixes ==
+
+ * Make skipbroken run again when packages are added in postresolve (Eg. langpacks).
+ * Allow pkgtag (and hence yum) be loaded on RHEL-5 / python 2.4 environments.
+ * Process obsoletes only for the newest packages, again. 
+ * SearchPrco() will now do specific results - not just matches against name.
+ * Can upgrade kernel packages again.
+
+== Resource improvement changes ==
+
+ * Much faster returnObsoletes(newest=True), requires newer python/sqlite (fast searchNames()).
+ * Add "cache" of yumdb package checksum data.
+ * Don't preload all of the yumdb paths.
+ * Don't load all of the rpmdb packages in matchPackageNames (remove, and probably others).
+
+== API changes ==
+
+ * All package object derived classes are "scriptable". Eg. ("%(ui_nevra)s - %(ui_from_repo)s" % pkg).
+ * Added misc.string_to_prco_tuple() which is a reversal of misc.prco_tuple_to_string().
+
+=== Developer stats. ===
+
+{{{
+3.2.27 -  45 commits: Thu Mar 18 14:21:57 2010 -0400
+
+27 files changed,   9,914 insertions(+),   5,498 deletions(-)
+14 files changed,     376 insertions(+),     197 deletions(-) [yum rpmUtils bin *.py]
+}}}

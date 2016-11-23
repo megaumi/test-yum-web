@@ -1,0 +1,20 @@
+= '''NOTE: This is now core yum functionality, using the downgrade command''' =
+
+= allowdowngrade =
+This plugin adds a --allow-downgrade flag to yum to make it possible to
+manually downgrade packages to specific versions.
+
+
+== How to install ==
+Use the following command to install the allowdowngrade plugin
+{{{
+yum install yum-allowdowngrade
+}}}
+
+== Examples ==
+
+== Command line options ==
+
+== Config file options ==
+
+== Notes ==

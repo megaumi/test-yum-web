@@ -1,0 +1,66 @@
+= Compare Providers =
+
+== the problem ==
+When yum is depsolving and it finds that a requirement is provided for by more than one pkg it has to make a choice about which pkg to install. At one point in time it decided by choosing the 'first' one. That was too arbitrary so in casting around for a solution the yum developer used the scheme that Anaconda had used for a while which was to use the pkg with the shortest name. If the pkgs had the same
+length name then it took the one that sorted first, alphabetically.
+
+This became a problem b/c, while it was deterministic it was a pain to keep up with. In 2008 the yum developers started working on a
+scoring system to judge which pkg to pick when multiple pkgs provided a dep. The method is in depsolve.py and is called _compare_providers()
+
+== overview ==
+This is the general overview:
+There are a couple things that should be fairly obvious:
+
+- If there's only one candidate package it's picked
+- Obsolete packages are only picked as a last resort.
+
+Other general trends (in order of approximate precedence):
+
+1)  Candidates from the same srpm as the requiring package are preferred
+
+2)  Candidates with names that start the same as the requiring package are favored
+
+3a) Candidates with the same (or similar) arch as the requiring package have more pull than those with a less similar arch
+
+3b) Candidates with the same (or similar) arch as the system have more pulls than those with  a less similar arch
+
+3c) Candidates with close relationships to the already installed system (and transaction/requestor) have more pull than those that would require more changes to the installed system
+
+4)  In the event of a tie, candidates with very long names will lose the tie
+
+5)  In the event they are still tied, they are sorted alphabetically and "highest" wins (zpkg is picked over apkg).
+
+== details ==
+Here is the detailed view  of what compare_providers() will do - as of roughly yum 3.4.3-70:
+
+0. each pkg starts out with a score of 0.
+
+1. All packages are passed to any compare_providers hooks in plugins.
+
+2. if any of the providers is a newer version of something we have installed then increase their score by 5
+
+3. if any of the providers is the same version of something we have installed then increase their score by 1000
+
+4. if any of the providers is an older version of something we have installed then decrease their score by 1024.
+
+5. if any of the providers are obsoleted by another provider, decrease that provider by 1024. 
+
+6. check the arch distance between the requiring pkg and each of the providers. The pkg with the smallest arch distance gets a 5 added to their score. Do the same check but comparing the pkg arch distance to the system arch, not the requiring pkg arch
+
+7. compare the sourcerpm  on each provider to the requiring pkg's source rpm. If they share a sourcerpm add 20 to the score
+
+8. check the base pkg for each subpkg. If the base pkg is installed on the system add 5 to the provider's score.
+
+9. check the prefix of the pkg to the requiring pkg prefix (perl-foo and perl-lib) for each common character in the prefix add 2 points to the provider's score.
+
+10. if, at this point, we have pkgs with an equal score - look at the version of the provide, and if all providers of the top score have a specific version then compare those versions and choose the newest.
+
+11. if, at this point, we have pkgs with an equal score - look at the deplist (one layer deep) and see what they would pull in that is NOT already installed. Add 1 to the score of the pkg with the least new deps to be pulled in.
+
+12. if all else fails and we STILL have  two pkgs with the same score - take the leaders from the list and compare their name length. We add 1,000 and then subtract the length of the number of character's in the pkgs name from its score (the addition of 1000 is to ensure that one of the leaders will be picked).
+
+13. return the list of providers, sorted best to worst.
+
+14. if the packages are the same length, then the packages are compared as shown in "yum list". The one lower in the list will win.
+
+In all cases we currently just take the winner (first entry) and throw the rest away.

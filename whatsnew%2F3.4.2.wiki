@@ -1,0 +1,59 @@
+{{{
+#!html
+<h1 style="text-align: center;">
+ <a style="position: absolute; left:  0; font-size: 50%;" href="3.4.1">3.4.1 &larr;</a>
+  What's new in 3.4.2
+ <a style="position: absolute; right: 0; font-size: 50%;" href="3.4.3">&rarr; 3.4.3</a>
+</h1>
+}}}
+
+== User Interface changes ==
+
+ * Add gettext plurals support.
+ * Turn an erase name into a txmbr, when we can (kernel in yum.log etc.).
+ * Don't print "Finished dependency resolution" when we haven't (--skip-broken).
+ * Sort "duplicate" packages better for search.
+ * Tweak output of "yum provides", show installed repos. etc.
+ * Add a "groups" sub-command (compat. for old groupinstall/etc. are there).
+ * Change clean_requirements_on_remove to deal better with chains of deps.
+ * Output list of packages we couldn't find, for upgrade/remove/install/downgrade/reinstall (only via. history undo/load-ts)
+ * Don't say "Complete!" if we didn't run the transaction.
+ * Create transaction-done files correctly for removal only transactions.
+ * Fix more unicode braindamage (groupremove).
+ * Show which repo. doesn't have a gpgkey.
+ * Have all commands do sane things with in quiet mode.
+ * Make "yum provides" more usable, by searching for commands or python modules.
+ * Add "repofile" to repolist -v output.
+ * Add "history rollback" command.
+ * Allow "last" in merged transactions, fix some bugs in other usage.
+
+== Significant bugfixes ==
+
+ * Fix leaked file descriptor in logging.
+ * Fix another bug in libc collapsing code (only a single libc entry in rpm).
+ * Mark failed transaction members when we detect them.
+ * arm now has an "arm" basearch.
+ * Use the timestamp_check to determine if we can revert, when we don't download anything (repodiff/etc.).
+ * Work around RHEL-5 python's getlocale() call (Eg. LANG=en_IN).
+ * Don't list repos. in the "saved-transaction", if we are doing a remove only transaction.
+ * Fix collapse_libc_requires for the latest glibc versions.
+
+== Resource improvement changes ==
+
+ * Don't list repos. in the "saved-transaction", if we are doing a remove only transaction.
+ * Don't use .up object on package install.
+
+== API changes ==
+
+ * Fix for pulp using RepoStorage.
+ * Fix for _retrievePublicKey() when called without a repo.
+ * Also ignore ENOTDIR in stat_f.
+
+=== Developer stats. ===
+
+{{{
+3.4.2 -  63 commits: Wed Jun 22 16:58:09 2011 -0400
+
+59 files changed, 66,155 insertions(+), 21,726 deletions(-)
+17 files changed,    690 insertions(+),    240 deletions(-) [yum rpmUtils bin *.py]
+}}}

@@ -1,0 +1,19 @@
+= fedorakmod =
+Plugin for Yum to handle installation of kmod-foo type of kernel modules, when new kernel versions
+are installed.
+kmod-foo kernel modules is described by the Fedora Extras packaging standards.
+
+
+== How to install ==
+Use the following command to install the fedorakmod plugin
+{{{
+yum install yum-fedorakmod
+}}}
+
+== Examples ==
+
+== Command line options ==
+
+== Config file options ==
+
+== Notes ==

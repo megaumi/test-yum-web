@@ -1,0 +1,14 @@
+= Automating Updates with Yum =
+
+== yum-cron ==
+
+....
+
+
+== yum check-update ==
+
+....
+
+== yum-update-on-boot ==
+
+...

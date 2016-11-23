@@ -1,0 +1,104 @@
+= Repoquery use =
+
+Repoquery is a yum-util that has an array of involved and complicated options. It is intended to be an analog to rpm -q commands but run on remote repositories. This accounts for why it is complicated and involved :) This page has a series of common/useful commands someone may want to use repoquery for.
+
+== Enabling repositories ==
+
+By default repoquery acts on the repositories you have enabled in your yum configuration. You can enable/disable repos by using ''--enablerepo=repoid'' or ''--disablerepo=repoid''. Occasionally you'll just want to query a single repo, when that happens you can use ''repoquery --repoid=repoid''. Then ONLY that repository will be enabled, no matter your yum configuration.
+
+Often you may find yourself wanting to query a repo that is NOT set up in your yum configuration. Repoquery handles that case specifically with ''--repofrompath'': 
+   
+   {{{ 
+       repoquery  --repofrompath=somereponame,http://path/to/this/repo --repoid=somereponame  -q -a 
+   }}}
+
+== Specifying archs ==
+
+Repoquery can work on any arch but by default it uses the arches for the system it is running on. However, if you want to specify an arch for it to use you can use ''--archlist''. Some examples:
+
+Only query i686 pkgs, nothing else:
+
+   {{{ 
+      repoquery -q --archlist=i686 -a 
+   }}}
+
+Query i686 and i386 pkgs:
+  
+   {{{ 
+      repoquery -q --archlist=i686,i386 -a 
+   }}}
+
+Look at source rpms:
+
+   {{{ 
+      repoquery -q --archlist=src -a 
+    }}}
+
+
+== Searching for answers ==
+
+If you need to figure out what in the repos requires any thing from a particular package run:
+
+   {{{ 
+     repoquery -q --whatrequires --alldeps pkgname
+   }}} 
+
+  (in new versions of repoquery --alldeps is the default)
+
+If you need to figure out which srpms have a buildrequirement on a particular pkgname run:
+
+   {{{ 
+     repoquery --archlist=src --repoid=some_repo_with_srpms -q --whatrequires pkgname 
+   }}}
+
+Using repoquery on installed packages only:
+   {{{ 
+      repoquery --pkgnarrow=installed -q --whatrequires --alldeps pkgname 
+   }}}
+
+That is the equivalent of: ''rpm -q --whatrequires pkgname''
+
+
+List all the files owned by a package:
+   {{{
+      repoquery -q -l pkgname
+   }}}
+
+List all the packages that own a file:
+   {{{ 
+      repoquery -q --file /usr/bin/yum
+   }}}
+
+== Formatting output ==
+
+If you need to print out a list of pkgs, their url from the repo and the repo they came from you could run:
+
+   {{{ 
+    repoquery -q --qf="%{name} %{repoid} %{location}" pkg1 pkg2 pkg3 
+   }}}
+
+
+== Plugins ==
+If you need a plugin enabled to access repos then you may need to specify --plugins to each command to enable plugins in repoquery 
+searches. This is important for rhel5 boxes since they need to use yum-rhn-plugin to access their list of repositories and metadata.
+
+
+== Notes ==
+
+the ''-q'' option to repoquery is entirely optional. It is only there for compatibility with rpm -q so people can make good use of their muscle memory w/o cursing.
+
+== More Help ==
+
+see 
+
+   {{{ 
+     repoquery --help
+   }}}
+
+and 
+
+   {{{
+      man repoquery
+   }}}
+
+for more help.

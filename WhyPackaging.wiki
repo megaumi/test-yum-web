@@ -1,0 +1,56 @@
+= analogy =
+ It is sort of like a viewpoint. You're zoomed very close in - atomic scale, you pull back you see the molecule that the atom makes up.
+ You pull back more you see what the molecule is (water, for example)
+ You pull back even more and you see what the water molecules are actually suspended in cloud-form.
+
+
+ systems were atoms - unique, hard to predict and impossible to KNOW entirely
+
+ then they were molecules - sets that depended on each other and worked together
+
+ then they were groups of the same molecules, acting the same way and being uniform
+
+ now they are groups of diverse molecules that create clouds of systems
+
+
+= unix history =
+ older unixes practically came embedded on the hw :)
+ manual patching
+ suffering to update so stability was critical
+ relatively few actual systems so it was possible to maintain one at a time.
+ major system updates were A HUGE deal
+
+= sysadmin history =
+ lots of apps added by hand - most of the gnu apps were added constantly and right away with any new system
+ maintaining thousands of them was a pain - projects like stow were done to help facilitate that under solaris, ultrix, slackware linux, etc.
+
+= where scale of num of systems pushed deployment needs =
+ as computational clusters of boxes were being added it stopped scaling to install each of them separately - but hw was reving too fast for the same 'ghosted' full-system-image install to work. So the installers needed to be able to do a lot, very quickly, and cope with the diverse hw.
+
+= where num of available human-hours pushed maintenance needs =
+ as the number of systems went up the number of admins did not. So they had to make tools and policies to handle managing LOTS of systems the same way. A lot of admins addressed this with tools like cfengine - but more and more they did it by homogenizing their systems. Reducing the 15 different oses and standardizing on as few as possible. More importantly as the number of systems scales WAY up it became impossible to track them all in your head. They had to be completely anonymous and consistent. Faceless rather than unique. 
+
+= why linux won so much vs other unixes in the server/cluster world =
+
+Linux running on commodity and diverse hw  is a big win, definitely. But lots of other unixes did that. What distinguished linux?
+
+Red Hat's Kickstart installer really made a big difference. Kickstart was a pun off of jumpstart from Solaris - but the difference was:
+ 1. kickstart worked really well on diverse hw
+ 2. kickstart was vastly simpler to work with
+
+kickstart and pxe made it possible to boot a cluster of machines and have them all up and running w/o actually touching any hw and most importantly have them all be identical in all the important ways. It didn't require careful image creation and then going through and purging out the changes you made simply by creating the image.
+
+You knew the image was completely pristine b/c it was using the same process as the installer. You knew the installer did it right b/c of the packaging system. This is why the packaging system matters so much. Kickstart only works if there is a way to calculate if the requested set of pkgs will work together and what else it needs to all work together. 
+
+= why we continue to win now =
+
+Now deploying 1000 diverse boxes was doable.
+
+Then the trick became maintaining them. Our packaging tools made that happen. Knowing you can use the rules in the packaging system so that an update won't break the world and will apply consistently even if the package set on any 2 boxes is not QUITE the same is what was critical on the individual system scale.
+
+
+= what tools matter =
+Now everyone is working on more tools for managing sets of systems and for deploying clouds of them. The scale is pulling back to an even larger size. 
+
+The tools that matter will let an admin deal with clouds of systems at a time and be able to cope with what they are doing inside them w/o having to worry too much about the minutiae.
+

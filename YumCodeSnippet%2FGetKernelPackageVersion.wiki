@@ -1,0 +1,19 @@
+This is how you find out what kernel yum thinks you are running:
+
+{{{
+  import yum
+  from rpmUtils.transaction import initReadOnlyTransaction
+
+  ts = initReadOnlyTransaction()
+  print yum.misc.get_running_kernel_pkgtup(ts)
+}}}
+
+...or, with less imports and more yum:
+
+{{{
+  import yum
+
+  yb = yum.YumBase()
+  ts = yb.rpmdb.readOnlyTS()
+  print yum.misc.get_running_kernel_pkgtup(ts)
+}}}

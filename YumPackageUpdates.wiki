@@ -1,0 +1,156 @@
+= Package updates in yum =
+
+== Package update, simple ==
+
+A new version is released upstream, or just within the repo. with local patch(es):
+
+ * pkgA-1.2.3-4 is installed
+ * pkgA-2.3.4-5 is available
+
+In this case pkgA just updating the version in the package and rebuild, and pkgA will be updated to the new version. This is what happens 99% of the time.
+
+== Package rename ==
+
+A new version is released, but it changes the name:
+
+ * pkgA-1.2.3-4 is installed
+ * pkgB-2.3.4-5 is available
+
+The usual thing to do here is to have:
+
+{{{
+    # pkgB-2.3.4-5
+    Obsoletes: pkgA <= 1.2.3-4
+}}}
+
+Now pkgA will be updated to pkgB. However note that pkgA-1.2.3-4 can be installed via. rpm, after pkgB is installed. You may want to have something like:
+
+{{{
+  # pkgB-2.3.4-5
+  Conflicts: pkgA <= 1.2.3-4
+}}}
+
+...to stop that. For compatibility you may also want to do:
+
+{{{
+  # pkgB-2.3.4-5
+  Provides: pkgA
+}}}
+
+...as now packages which "Requires: pkgA" will continue to work. 
+
+== Package split ==
+In general you have N things inside one package and move to a point where you have N packages all providing one thing, you cannot easily decide for the user which of the N things they wanted originally. So the general case let's the user decide:
+
+=== General case ===
+
+A package splits into two:
+
+ * pkgA-1.2.3-4 is installed
+ * pkgA-2.3.4-5 is available
+ * pkgA-foo-2.3.4-5 is available
+
+This is a similar problem to the rename, except that we are renaming some of pkgA to one place and some to another (the same place):
+
+{{{
+  # pkgA-foo-2.3.4-5
+  Obsoletes: pkgA <= 1.2.3-4
+
+  # pkgA-2.3.4-5
+  Obsoletes: pkgA <= 1.2.3-4
+}}}
+
+Now on update pkgA will be updated and pkgA-foo installed. If you don't have the Obsolete in pkgA then it will work as a rename, which is probably not what you want.
+
+However if the user does "install pkgA-foo" or "install pkgA-2.3.4" they will end up with just pkgA-foo or pkgA, respectively.
+
+=== Package split in two, Application and noarch data ===
+
+A package splits it's (large) data into a noarch sub-package:
+
+ * pkgA-1.2.3-4 is installed
+ * pkgA-2.3.4-5 is available
+ * pkgA-data-2.3.4-5 is available
+
+This is somewhat different in that you have a very high expectation that a user will want '''both''' installed afterwards, and never '''just''' pkgA or pkgA-data:
+
+{{{
+  # pkgA-2.3.4-5
+  Requires: pkgA-data = 2.3.4-5
+  # pkgA-data-2.3.4-5
+  Requires: pkgA = 2.3.4-5
+}}}
+
+Now pkgA and pkgA-data will always '''both''' be installed.
+
+=== Package split in two, Application and new libraries ===
+
+A package does a new release which adds libraries other packages can use:
+
+ * pkgA-1.2.3-4 is installed
+ * pkgA-2.3.4-5 is available
+ * pkgA-libs-2.3.4-5 is available
+
+This is somewhat different in that you have a very high expectation that a user will want '''both''' installed afterwards, and never '''just''' pkgA-libs (because -libs wasn't available before):
+
+{{{
+  # pkgA-2.3.4-5
+  Requires: pkgA-libs = 2.3.4-5
+}}}
+
+Now pkgA and pkgA-libs will be installed on upgrade, and some pkgB can then depend on just pkgA-libs and people who don't have pkgA installed will not get it.
+
+To repeat: If the old pkgA provided libs and you are just splitting them from one package to two, it is not obvious that the user doesn't want '''just''' pkgA-libs.
+
+== Package merge ==
+
+A package merges a sub-package into the main package:
+
+ * pkgA-1.2.3-4 is installed
+ * pkgA-foo-1.2.3-4 is installed
+ * pkgA-2.3.4-5 is available
+
+This is basically the same problem as a rename, so the solution is the same:
+
+{{{
+  # pkgA-2.3.4-5
+  Obsoletes: pkgA-foo <= 1.2.3-4
+}}}
+
+Now pkgA will be updated and automatically remove the old pkgA-foo-1.2.3-4.
+
+== Package update, requires newer interface ==
+
+A package depends on something else, and older versions will fail.
+
+ * pkgA-1.2.3-4 is installed
+ * pkgB-3.4.5-6 is available
+ * pkgA-2.3.4-5 is available
+ * pkgB-4.5.6-7 is available
+
+The obvious solution here is:
+
+{{{
+  # pkgA-2.3.4-5
+  Requires: pkgB >= 3.4.5-6
+}}}
+
+...which will bring the new version of pkgB along if pkgA is updated.
+
+== Package update, fails with older interface ==
+
+A package _doesn't_ depend on something else, but older versions will fail.
+
+ * pkgA-1.2.3-4 is installed
+ * pkgB-3.4.5-6 is available
+ * pkgA-2.3.4-5 is available
+ * pkgB-4.5.6-7 is available
+
+The obvious solution here is is to do the require, but in fact you want to do:
+
+{{{
+  # pkgA-2.3.4-5
+  Conflict: pkgB < 3.4.5-6
+}}}
+
+...this will update pkgB, if it's already installed, but do nothing otherwise.

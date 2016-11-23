@@ -1,0 +1,18 @@
+== Yum Code Snippets ==
+
+This is just snippets of code using the yum modules for common/simple tasks. Add/edit/comment as you'd like. All of these snippets assume that you have done "import yum, os, sys".
+
+ 1. [YumCodeSnippet/OpenLocalPkg Open a local package]
+ 1. [YumCodeSnippet/ReturnGpgInfo Return the gpg signature info from a package]
+ 1. [YumCodeSnippet/ParseRpmFilename Get the naming data from an rpm filename]
+ 1. [YumCodeSnippet/FindFileOwner Find owner of a file]
+ 1. [YumCodeSnippet/SimplestTransaction Simplest transaction you can have]
+ 1. [YumCodeSnippet/SetupArbitraryRepo Setup a repo at an arbitrary location]
+ 1. [YumCodeSnippet/VerifyPkg Verify an installed package]
+ 1. [YumCodeSnippet/YumList A simple version of the "yum list" command]
+ 1. [YumCodeSnippet/YumSearch A simple version of the "yum search" command]
+ 1. [YumCodeSnippet/ListAllPkgs List all the available packages]
+ 1. [YumCodeSnippet/ListInstalledPkgs List all the installed packages]
+ 1. [YumCodeSnippet/GetArchInfo Get the arch information that yum knows about]
+ 1. [YumCodeSnippet/GetReleaseVersion Get the system release information]
+ 1. [YumCodeSnippet/GetKernelPackageVersion Get the running kernel package information]

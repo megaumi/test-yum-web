@@ -1,0 +1,25 @@
+{{{
+#!html
+<h1 style="text-align: center;">
+ <a style="position: absolute; left:  0; font-size: 50%;" href="3.4.0">3.4.0 &larr;</a>
+  What's new in 3.4.1
+ <a style="position: absolute; right: 0; font-size: 50%;" href="3.4.2">&rarr; 3.4.2</a>
+</h1>
+}}}
+
+== User Interface changes ==
+
+ * No double baseurl for repolist -v.
+
+== Significant bugfixes ==
+
+ * Fix umask bug (security).
+
+=== Developer stats. ===
+
+{{{
+3.4.1 -  2 commits: Thu Apr 14 16:50:06 2011 -0400
+
+ 5 files changed, 23 insertions(+), 5 deletions(-)
+ 3 files changed,  3 insertions(+), 3 deletions(-)
+}}}

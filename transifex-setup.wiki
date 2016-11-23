@@ -1,0 +1,16 @@
+if you are a maintainer of yum and you need to update the translations you should do this:
+
+ - tx init
+ - tx set --execute --auto-local -r yum.3-2-x-po-yum-pot 'po/<lang>.po' --source-lang=en --source-file=po/yum.pot
+
+to pull the latest of everything:
+ - tx pull -a -f
+
+to push up new changes to the .pot file
+
+ - tx push -s -t
+
+More info here:
+http://lists.fedoraproject.org/pipermail/trans/2011-January/008573.html
+
+Note that username/password settings are stored in ~/.transifexrc

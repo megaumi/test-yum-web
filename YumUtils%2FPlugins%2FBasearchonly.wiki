@@ -1,0 +1,22 @@
+= '''NOTE: This is now core yum functionality, using the multilib_policy configuration option''' =
+
+= basearchonly =
+this plugin makes Yum only install basearch packages on multiarch systems.
+If you type 'yum install foo' on a x68_64 system, only 'foo-x.y.x86_46.rpm' is installed.
+If you want to install the foo-x.y.i386.rpm, you have to type 'yum install foo.i386'.
+The plugin only works with 'yum install'.
+
+
+== How to install ==
+Use the following command to install the basearchonly plugin
+{{{
+yum install yum-basearchonly
+}}}
+
+== Examples ==
+
+== Command line options ==
+
+== Config file options ==
+
+== Notes ==

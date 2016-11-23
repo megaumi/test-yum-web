@@ -1,0 +1,11 @@
+
+Simplest transaction you can have (yum 3.2.7 and above):
+
+{{{
+#!python
+yb = yum.YumBase()
+yb.install(name='somepackage')
+yb.remove(name='someotherpackage')
+yb.resolveDeps()
+yb.processTransaction()
+}}}

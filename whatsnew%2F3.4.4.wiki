@@ -1,0 +1,245 @@
+{{{
+#!html
+<h1 style="text-align: center;">
+ <a style="position: absolute; left:  0; font-size: 50%;" href="3.4.3">3.4.3 &larr;</a>
+  What's new in 3.4.4
+ <a style="position: absolute; right: 0; font-size: 50%;" href="3.4.5">&rarr; 3.4.5</a>
+</h1>
+}}}
+
+== User Interface changes ==
+
+ * fail when sigCheckPkg() returns 2 in yum-cron.
+ * Add "groups mark blacklist" command to get out of the upgrade problem.
+ * Show groups being installed/upgraded in groups as objects mode.
+ * Have "yum group upgrade" do all, as "yum upgrade" does in objs. mode.
+ * Change groupupdate command to call "group update" back compat. too confusing.
+ * Lots of groups UI/process fixes.
+ * Add check-update sub-command to repo-pkgs.
+ * Add command variation aliases to check-update.
+ * Add deltarpm_metadata_percentage config. so people can configure MD downloads.
+ * Add autocheck_running_kernel config. so people can turn it off.
+ * Add upgrade_group_objects_upgrade config. so people can turn it off.
+ * Add distupgrade command as alias for distro-sync, to be compat. with zypper.
+ * Add cache check to repolist, using "!". Document repoinfo.
+ * Add a "--disableincludes" option to yum.
+ * Fix downgrade keeping .reason, note that remove+install doesn't.
+ * Inherit reason from install package into txmbr.
+ * handle "No Groups Available" exception.
+ * Add debuglevels -2, -3, -4. Main user is yum-cron.
+ * Add simple way to specify a group of pkgs. for version.
+ * Change group install => group upgrade for installed groups.
+ * Give more text when telling user about y-c-t, mention history.
+ * Skip installonly limit, if something has set check_future_rpmdbv.
+ * Add a fssnapshot command, and a few fssnap_* config. options for taking FS snapshots.
+ * Use "real" yum logging for updateinfo parsing errors.
+ * support "proxy = libproxy" syntax to enable libproxy.
+ * Add a fuzzy matcher for numbers in format_missing_requires.
+ * Add the "minrate" config. option.
+ * Do a few changes to make the updateinfo command more user friendly (more fnmatches, can drop CVE prefix, reorder args. etc.).
+ * Don't highlight the empty space, Eg. --showdups list.
+ * Add downloadonly option to userconfirm download prompt.
+ * Use updateinfo from yum-cron (so we can do security only updates).
+ * Merge updateinfo command, --security, etc. into core.
+ * Reuse mirrors when max_retries > len(mirrors).
+ * Add hourly cron as well as daily.
+ * Ignore case for deplist command.
+ * Add "makecache fast", instead of having to do "clean expire-cache"+chk.
+ * Don't ask users to file a bug when rpmdb is inconsistent.
+ * Integrate deltarpm into core, can rebuild drpms while downloading rpms now.
+ * Add "list distro-extras", which is like extras but ignores version/arch.
+ * Automatically expire caches (yum clean expire-cache) on repo errors.
+ * Use xattr data as well as file size for "fast checksumming".
+ * Have load-ts list the possible transaction files with some data.
+ * Fix problems with mirrors like wtfnix.com, delete bad MD files.
+ * Fix yum-cron service file for systemd, add conversion code.
+ * Add a fake requires for pyxattr, knowing origin_url is worth 62k.
+ * Add ui_repoid_vars configuration, so repos. can show which vars they are using.
+ * Dump "all" yum variables into the yumdb.
+ * Add repopkgsremove_leaf_only and remove_leaf_only config. options.
+ * Add a repo-pkgs command, to treat a repo. as a set of packages.
+ * Add a swap command, for simple shell cases.
+ * Add a metadata_expire_filter configuration, and use it in the shipped commands.
+ * Don't error in history list, when we have no history.
+ * Fix "0" epoch matching for nevra on installed packages.
+ * Move to new yum-cron.py, uses yum API directly does background downloading/etc.
+ * Add requirement on pyliblzma.
+ * Merge downloadonly plugin into core, do background downloading with downloadonly.
+ * handle re.compile() errors, Eg. [b-a].
+ * Don't skip loadts new rpmdbv check, when transaction changes.
+ * If ignoremissing is on in load-ts and something is missing, turn ignorenew on.
+ * Ignore --installroot=// etc. as a command line option.
+ * Add repoinfo command to do repolist -v.
+ * Add --show-duplicates alias, for repoquery compat.
+ * Add code to merge the refs/pkgs of two "identical" updateinfo errata.
+ * Add .ui_id to repos. showing $releasever/$basearch.
+ * Move to using urlgrabber's multi file progress.
+ * Better UI for installed/available and lang/pkg/env, in groups list/summary.
+ * Add all the resources in the repomd, when using mdpolicy=group:all
+ * Show giant message about mutilib errors, to help people understand.
+ * Add support for installing/removing/etc. 'environment groups'.
+ * Add the opt. commands: remove-n, remove-na, remove-nevra. Like install-*
+ * Add autoremove alias for clean_reqs_on_remove, for apt ppl (also no arg. functionality).
+ * Make tolerant turn on recheck_installed_reqs ... maybe similar tradeoffs.
+ * quote uids to keep cachedir ascii-clean. 
+ * add 'max_connections' and 'async' config. options, do parallel downloads and merge timedhosts.
+ * Handle empty arguments passed to commands a lot better (Eg. yum provides "").
+ * Check for a compat. arch. as well, when hand testing for upgradability in install.
+ * exit(1) when all reinstall/downgrade args. are bad.
+ * Make resolvedep output nicer, as people misparse the mock build output.
+ * If we are doing: "yum info installed blah" don't do the highlights.
+ * add support for 64 bit arm hardware.
+ * Added ssl_check_cert_permissions config. option, to workaround unreadable certs.
+ * Add kernel-highlight colour config. option (for running kernel).
+ * Add a recheck_installed_requires config. option.
+ * make --setopt take globs for the repo setopts, Eg. yum --setopt='*.skip_if_unavailable=1' update.
+ * Search for other installed packages, for available lists in "all".
+ * Add group_command=object config., documentation, module and UI.
+ * Try comparing provides versions, if they all match.
+ * do globs on provides in 'yum install'.
+ * Have users always use own dirs.
+ * Give name of pkg. and GPG urls when failed to install key. CKS/YumCryptoFail.
+ * Add mddownloadpolicy, so people can config. yum to use XML instead of sqlite.
+ * verifyTransaction progress, creates verify_txmbr() functions on RPMTransaction() and RPMBaseCallback() classes.
+ * Add simple install-n etc. functions for rel-eng.
+ * arm hardfp support
+ * Extend the output of listTrans details for quiet mode, and not assumyes.
+ * Add reset_nice configuration, and turn it on by default.
+ * Ignore time skew by using sqlite IDs instead to order yum history transactions.
+ * Output the GPG fingerprint when showing the GPG key.
+ * Allow force-reinstall and force-remove as leading arguments for history redo.
+ * Let resolvedep look for installed packages, and make it a hidden command.
+ * Add lots of pkg attributes like pkg.na and pkg.evra etc. (mainly useful for repoquery).
+ * Separate out dep. pkgs from pkgs. in trans. summary, and use dynamic lengths in trans summary.
+ * Add summary for skipped/not installed/not available.
+ * Add upgrade_requirements_on_install config. option.
+ * Add ip_resolve config. option.
+ * Add hack to work around broken python readline handling in "yum shell".
+ * Accept old outputs of "yum -q history addon-info saved_tx" in load-ts command/API.
+ * Make "yum -q history addon-info last saved_tx" valid input for load-ts.
+ * Add "history packages-info/stats/sync" sub-commnands.
+ * Add extra data to the history DB, we now have historic records for a few rpmdb/yumdb entries.
+ * Add load-ts to the man page.
+ * Don't warn about already installed packages in "group install".
+ * yum-cron now has a command, and the code got tidied up a lot.
+ * Output the yum_save.yumtx file on user cancel and GPG fail (and tidy the filename a bit).
+ * Add --assumeno, which does the opposite of --assumeyes.
+ * Allow "remove" to use the alwaysprompt logic (default is still alwaysprompt=true).
+ * Give a message when rpmdb fails to find releasever, when it said it could.
+
+== Significant bugfixes ==
+
+ * fail when sigCheckPkg() returns 2 in yum-cron.
+ * Lots of groups UI/process fixes.
+ * Add loop limit for depsolving.
+ * Fix some bugs in setopt for repo config. entries. Eg. Split repoid.config_name on the last dot instead of the first.
+ * Try to smooth out the edge cases for cacheReq not ever updating data.
+ * Add epoch to updateinfo xml output.
+ * checkMD: re-check when xattr matches but size==0.
+ * Add "weak" comps. groups, for installed groups. For comps.return_groups(). Use new comps. mock objects to re-integrate group removal.
+ * Deal with multiple winners in providers vercmp (usually multilib).
+ * Pass the req. name (_reqFromTrans) into compare_providers, for provs. vercmp.
+ * Override users umask for groups files, so users can read it.
+ * handle "No Groups Available" exception.
+ * Fix parsing of power7+ platform string.
+ * Get correct rpmdb path from rpm configuration.
+ * Reset igroups in .closeRpmDB(), undo'ing all .add_groups() data.
+ * Check for bad checksum types at runtime.
+ * Skip installonly limit, if something has set check_future_rpmdbv.
+ * Resurrect diskspacecheck=0 functionality and enable inode problem filtering too on diskspacecheck=0
+ * Include the update date if available in the generate updateinfo xml.
+ * Fixes extra '</pkglist>' tags on multi-collection errata.
+ * Fix circular obsoletes in transaction members check.
+ * Fix "0" epoch matching for nevra on installed packages.
+ * Don't quick fail for excludes that start with [foo] character lists.
+ * A solution to the obsoletes but don't provide problem.
+ * Fix for ppc64p7 arch. detection.
+ * Fix weird edge case for isntallonly, when we install N kernels at once.
+ * Don't traceback in hisotry stats, when we have no transactions.
+ * honor proxy=_none_ again.
+ * Fix UpdateNotice.getitem when asked for iteration, add contains.
+ * Fix test_loop, previously it always failed the first obs. chain.
+ * Create "strong requires", and use that for recheck on upgrade.
+ * Search for other installed packages, for available lists in "all".
+ * Quote 'proxy_username' and 'proxy_password'.
+ * Add getcwd() check as well as open(".") check.
+ * Init "found" variable for distro-sync full.
+ * Fix _conv_pkg_state when calling with history as checksum.
+ * When a repo. fails in repolist, manually populate the ones after it.
+ * Ignore lock held by a zombie process.
+ * Add fix for upgrade with same reqs. "Forces" upgrade.
+ * Workaround the rpm change of obsoletes are conflicts mess.
+ * Use the correct test to see if the INSERT worked, for RHEL-5 sqlite.
+ * handle signatures which are not directly following the pub key but are elsewhere in the key info.
+ * Fix problems with using old generated data.
+ * Don't traceback on --setopt=foo and --setopt=foo=1=1.
+ * Workaround rpm-python size braindamage.
+ * Handle ENOSPC when creating lock files.
+ * Sort data for XML generation.
+ * Fixes required for createreop SQL update code.
+ * Fix traceback when enabling/disabling repos.
+ * Don't output \r to non-tty's.
+ * Override the umask settings for yum makedir() as well as open().
+ * Ingore EACCESS errors on yumdb stat calls.
+ * Fix "not found" code when calling with pkgtups.
+
+== Resource improvement changes ==
+
+ * Fix needTs check with repo-pkgs list/info.
+ * Add deltarpm_metadata_percentage config. so people can configure MD downloads.
+ * Add autocheck_running_kernel config. so people can turn it off.
+ * Add upgrade_group_objects_upgrade config. so people can turn it off.
+ * Add yum-makecache systemd service, force network updates on for better UI.
+ * Add loop limit for depsolving.
+ * Try to smooth out the edge cases for cacheReq not ever updating data.
+ * Make mdpolicy=group:small default, add group and pkgtags.
+ * Preload from root cache when --cacheonly.
+ * Remove repos.findRepos("*"), for repos.sort().
+ * Don't slow path simple non-installed package names. (Eg. yum list zzuf).
+ * override mdpolicy in yum-cron and turn metadata_expire off, so we always try to download all data in yum-cron.
+ * speed up /proc/cpuinfo parsing.
+ * Add a metadata_expire_filter configuration, and use it in the shipped commands.
+ * Add the opt. commands: remove-n, remove-na, remove-nevra. Like install-*
+ * If we are doing: "yum info installed blah" don't do the highlights.
+ * Don't require pkgSack setup for local install/reinstall/upgrade/downgrade.
+ * Change tsInfo.setDatabases() so we don't have to setup the pkgSack.
+ * Make searchFiles() a bit faster.
+ * Only update the XML => sqlite progress ~1% of the time.
+ * Add simple install-n etc. functions for rel-eng.
+
+== API changes ==
+
+ * Mostly backwards compat. change to how distroverpkg config. works.
+ * Reset igroups in .closeRpmDB(), undo'ing all .add_groups() data.
+ * Add fssnap module, and YumBase.fssnap property (can view/manipulate snapshots).
+ * Use "real" yum logging for updateinfo parsing errors.
+ * Extend findRepos() so it can work like repolist.
+ * Add updateinfo module.
+ * Add .upinfo YumBase property for updateinfo.
+ * Add timestamps to the transaction object, for created and changed time.
+ * Add obvious __ne__ to call __eq__ for updateinfo notices.
+ * Include environments when writing comps.
+ * Add .ui_id to repos. showing $releasever/$basearch.
+ * Minimally teach yum about rpm >= 4.10 scriptlet start and stop callbacks.
+ * Add support for parsing 'environment groups'.
+ * Add a simple checkfunc if we don't have one, for pkg d/l.
+ * Add a pkgdict argument to packages.parsePackages().
+ * Fix UpdateNotice.getitem when asked for iteration, add contains.
+ * Allow changing the exit code on non-fatal errors.
+ * Added generic installonlypkg(kernel-module) and installonlypkg(vm).
+ * Create "strong requires" for packages.
+ * Add helper function to access the fingerprint in the GPG key info data.
+ * Add returnInstalledPackageByDep() to pair with returnPackageByDep().
+ * Add ui_evr property to packages.
+ * Can now lookup a package in history, without creating a pkgtup entry for it.
+ * Have a pkg_warn keyword for install now, only used by "group install" atm.
+ * Adds a bunch of API documentation, see: [/api/yum here].
+
+=== Developer stats. ===
+
+{{{
+3.4.4 -  ?? commits: Tue Jan 14 15:29:03 2014 -0500
+
+?? files changed, ??,??? insertions(+), ??,??? deletions(-)
+?? files changed,    ??? insertions(+),    ??? deletions(-) [yum rpmUtils bin *.py]
+}}}

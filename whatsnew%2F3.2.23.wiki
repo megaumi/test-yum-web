@@ -1,0 +1,51 @@
+{{{
+#!html
+<h1 style="text-align: center;">
+ <a style="position: absolute; left:  0; font-size: 50%;" href="3.2.22">3.2.22 &larr;</a>
+  What's new in 3.2.23
+ <a style="position: absolute; right: 0; font-size: 50%;" href="3.2.24">&rarr; 3.2.24</a>
+</h1>
+}}}
+
+== User Interface changes ==
+
+ * Add '''downgrade''' command.
+ * It is now possible to reinstall local packages.
+ * It is now possible to reinstall obsoleted packages, without having to change the automatic obsolete processing configuration option.
+ * Yum has added it's own database, '''yumdb''', which gets filled with information as you install/update/etc. packages. This let's yum know where the package came from, why it was installed, etc.
+   * yum list will now show which packages an installed package came from (Eg. instead of "installed" it might say "@fedora").
+ * Transaction output about requires/conflicts now includes the full nevra information (instead of just the package name).
+ * We use the nevra instead of just the package name for package installs/updates.
+ * We try to convert the package name to an nevra for package removals.
+ * We know prefer packages that provide what we asked for in their latest versions.
+ * Add message about options in yum-utils/etc. when we have a dependency problem.
+ * Change the sort criteria when downloading packages, from smallest to alphanumeric.
+ * Add grouping of options to yum --help.
+ * Add the latest update time from metalink to "yum repolist -v", so you can see if you have the latest repo. metadata.
+ * Add group id's to grouplist -v.
+
+== Resource improvement changes ==
+
+ * We don't bother doing a checksum on local packages.
+ * Check to see if something that could be a local package ends in .rpm, before we stat() it.
+ * Speed up searchNames() when we've loaded everything already.
+ * Speed up our utf8 text wrap implementation.
+ * Don't load file lists in some edge cases Eg. yum provides "perl(*)"
+ * Cache verifyLocalPkg() successes.
+
+== API changes ==
+
+ * All installed packages have a yumdb_info member.
+ * We now do include object length in our checksum tests, include for repo. metadata (if a new enough createrepo was used that it's available).
+ * GenericHolder() now has a default attribute, mainly useful for when using doPackageLists().
+ * skip-broken now happens before postresolve_hook.
+ * Add downgrade() function.
+ * Allow pkgtup= to be used in install/update/remove/reinstall/downgrade.
+
+=== Developer stats. ===
+
+{{{
+3.2.23 - 173 commits: Tue May 19 15:54:50 2009 -0400
+48 files changed,  8,208 insertions(+),  4,789 deletions(-)
+31 files changed,  1,375 insertions(+),    461 deletions(-) [yum rpmUtils bin *.py]
+}}}

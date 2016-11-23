@@ -1,0 +1,8 @@
+= List of proposed Database stores for yum =
+
+There is ongoing discussion that having all the data inside rpm is untenable, this page lists all the databases that we are considering adding to yum. Note that at this point you will lose functionality if you rm -rf /var/db/yum or whatever.
+
+ * YumTsDb - Store information about transactions that have occured
+ * YumGroupDb - Store information about "installed groups", to make them real objects
+ * PK-desktop-files - replacement for /var/lib/PackageKit/desktop-files.db ... matches *.desktop files to applications (for icons, I assume).
+ * PK-"extra-data" - replacement for /var/lib/PackageKit/extra-data.db ... maps package names to icon names, and command to exec. Also maps packagenames to localized desktop summary data.

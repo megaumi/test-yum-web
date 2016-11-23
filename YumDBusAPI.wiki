@@ -1,0 +1,75 @@
+= Yum D-Bus API =
+
+This is a proposal for a API for a Yum [http://dbus.freedesktop.org/doc/dbus-specification.html D-Bus] daemon service.
+It is implemented as a D-Bus system service with the name 'org.baseurl.Yum' and an interface named 'org.baseurl.yum.Interface'
+
+There current development is located here:
+
+https://github.com/timlau/yum-daemon
+
+API marked with (DONE) has been implemented in the POC.
+
+Check this README to see how to test
+
+https://github.com/timlau/yum-daemon/README.md
+
+The idea is to give other applications access the services that yum provides, undependend of the programing language they are
+written in. And most languages has D-Bus bindings.
+
+The D-Bus service will be auto launch when someone tries to access it.
+Yum will only lock when some consummer grabs the lock and the yum object will be deleted when the lock is released.
+So it dont have any big memory impact when not in use. We could close down the service when it unlocked if we want that.
+The daemon uses [http://www.freedesktop.org/wiki/Software/PolicyKit PolicyKit] to check for acccess, so if the consummer is non root, the user will get a dialog asking for 
+root password, so non root application can easy use the yum services, without security issues.
+
+Client API binding has been made for [https://github.com/timlau/yum-daemon/tree/master/client/yumdaemon2 python2 (Sync)] and [https://github.com/timlau/yum-daemon/tree/master/client/yumdaemon3 python3 (Async) ]for easy usage from python programs 
+
+= Points to be worked out: =
+ * API functions we what to provide
+    * What should they do
+    * What parameter should they take
+    * What should they return an in what format.
+      * A good choice for non simple datatypes, could be [http://json.org/ JSON], it is simple and most languages has bindings for it.
+
+ * Should it be included in the yum source tree or should it live alone ???
+    * if inside yum:
+        * the daemon code could live in yum.daemon
+        * a client wrapper class could live in yum.client 
+          - Wrap the D-Bus daemon interface in a pythonic way to make it easier to use from a python application.
+    * if outside yum
+        * how should it be named : yumdaemon (yumdaemon & yumdaemon.client)
+        * we could include wrappers for other languages (If someone wants to write them)        
+
+= Known problems: =
+
+There have been some DBus packaging APIs already, we should avoid their mistakes:
+
+ * DBus isn't meant to push around a lot of data, this means things like "list installed" or even "list all" really shouldn't be happening over DBus.
+  * Don't seems to be a problem in my [https://github.com/timlau/YumTools/blob/master/yum-daemon/examples/python/async-calls2.py tests]
+{{{
+$ sudo python example/python2/async-calls2.py | wc -l 
+18171
+
+}}}
+ * We need to create some kind of context, so that different callers aren't speaking to a single instance. If you don't do this you have huge problems with auditing/etc. This probably means changes in core yum, so that we can have more than a single "backend" at once.
+  * With the locking in the current code, we only have one active consumer at a time. Adding multi consumers can cause a lot of pain and weird cases :)
+ * Needs to not be a giant single point of failure, so that if user X does a query FOO that isn't affected by user Y doing operation BAR (this is probably related to the previous problem ... and has problems when someone does a transaction).
+  * In the current code, I work with a Lock/Unlock so only the consumer there has the lock, will be able to perform any actions until the lock is released. Currently there is no automatic lock timeout, so if there user somehow don't releases the lock, then the daemon is locked. So some kind of automatic unlock & shutdown if no actions is being performed for a period of time.
+ * Previous attempts have tied authorization to API calls (this is probably helped by DBus), but this is almost worthless where "install" is a single API call. One hacky solution is to have a stupid number of specific APIs like "install_firefox_plugin". There really needs to be a better way though (maybe DBus feature?)
+  * Authentication is a True/False case, All methods there changes the system should need root authentication, selected ones will work without authentication (currently only !GetVersion), but others readonly action could be candidates to no require authentication. The main issues is Lock and !UnLock, should it be possible to lock yum without authentication ?
+
+= Examples =
+Examples is located [http://timlau.fedorapeople.org/yumdaemon/examples.html here]
+
+= References =
+* [https://launchpad.net/aptdaemon aptdaemon] the D-Bus daemon for apt used in Ubuntu. This is user by the Ubuntu Software Center to do the apt actions.
+
+
+= API Definitions: (Work in Progress) =
+
+All Documentation is located [http://timlau.fedorapeople.org/yumdaemon/index.html here]
+
+= Comments =
+ * timlau: 30-05-2012 - API Doc & Examples is replaced by links to [http://timlau.fedorapeople.org/yumdaemon/index.html external site] containing sphinx generated doc. 
+ * timlau: Change method names to !CamelCase to follow the [http://dbus.freedesktop.org/doc/dbus-specification.html#naming-conventions D-Bus naming convention]
+ 

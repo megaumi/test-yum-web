@@ -1,0 +1,90 @@
+{{{
+#!html
+<h1 style="text-align: center;">
+ <a style="position: absolute; left:  0; font-size: 50%;" href="3.2.28">3.2.28 &larr;</a>
+  What's new in 3.2.29
+ <a style="position: absolute; right: 0; font-size: 50%;" href="3.4.0">&rarr; 3.4.0</a>
+</h1>
+}}}
+
+== User Interface changes ==
+
+ * Add yum-cron as a sub-package.
+ * Added locking for non-root users, using cachedir.
+ * Add GPG CA keys functionality.
+ * Allow "ranges" of transactions in list/summary/pkg-list (works like merged transactions).
+ * If a package has a "url" xattr, store that in the yumdb.
+ * Sig. check one package from each repo. as we download, so we get the errors early.
+ * Warn when groupinstall will do nothing.
+ * Add protected_multilib config. option.
+ * Split "langonly" groups out from "normal" groups.
+ * clean functions will now remove any sqlite-journal files.
+ * Warn when a users does a "merged first option", Eg. "-vc blah".
+ * Add remove-with-leaves to core, but use yumdb.reason option=clean_requirements_on_remove.
+ * Normalize filenames when doing lookups, Eg. "yum provides".
+ * Split search patterns, if we get too many.
+ * Fix/allow remove+update, and update+remove in "yum shell".
+ * Add localpkg_gpgcheck option.
+ * Allow users to pass relative installroot paths.
+ * Allow users to see merged hisotry transactions (Eg. info 1..4)
+ * Give the package name in the error message, if we fail to open the header.
+ * Add "history package-list" sub-command, so you can easily see what happened to specific packages.
+ * Add "yum shell" data to history, as an addon.
+ * Add username/password Basic auth configuration options.
+ * Compare providers tweak, mark down older than installed packages.
+ * When doing searches, first try just name+summary. Can use "search all" for everything.
+ * Tweak the format_missing_requires text, to include same name different versions.
+ * Add --releasever=/, to use the current releasever (useful for installroots).
+ * Add concept of gpgcakeys to yum (see yum.conf for explanation)
+ * Grouplist separates langonly groups into their own section
+
+== Significant bugfixes ==
+
+ * Copy yumdb.installed_by/etc. if repoXML or loginuid doesn't exist.
+ * Fix --nogpgcheck when using dynamic repos.
+ * Fix "history undo" when dealing with obsoleting packages.
+ * Fix verification of symlinks.
+ * Fix obsoletes processing (mainly for local pkgs.).
+ * Use the correct urlgrabber opts. for getting gpgkeys.
+ * Don't re-decompress MD each time, use the same name.
+ * Fix problem with GPG key importing and auto-close.
+ * Add sha384 checksum, to allowed checksums (repos. can now use it).
+ * Handle unique MD files, when we have .xml only MD.
+ * Work around bad epoch data in updateinfo MD.
+ * Remove old txmbr's in reinstall.
+ * Unicide fixes.
+
+== Resource improvement changes ==
+
+ * Do the fnmatch => regex change, for searchPackageProvides.
+ * Speedup "provides 'perl(*)' etc. by 40% ish. (don't check files).
+ * Only do a filelists vs. primary match check once per. run (instead of once per. file lookup).
+ * Don't do lookups on oldreqs against the rpmdb, old super defensive code.
+ * Speedup rpmdb.pkglist time.
+ * Don't "drop cache" all of the rpmdb data, makes install/remove/etc. faster.
+ * Don't re-decompress MD each time, use the same name.
+ * Make obsoletes calculation faster.
+ * Make updates calculation faster.
+
+== API changes ==
+
+ * Add GPG CA keys functionality.
+ * Fix problems with auto_close.
+ * clean functions will now remove any sqlite-journal files.
+ * Add ability to save/load a transaction, post depsolve.
+ * Add a counter to the transaction, which is incremented when it changes.
+ * Use the newer rpm conflict index, if available (4.9.x).
+ * Add ud/od modes to txmbrs.
+ * Add argument to searchNames() to it can return pkgtups.
+ * Parse severity from updateinfo.
+ * History packages now have a '<history>' repoid.
+ * {{{PackageObject.__eq__}}} will now deal with objects that lack .repoid.
+
+=== Developer stats. ===
+
+{{{
+3.2.29 - 206 commits: Thu Jan 13 00:36:28 2011 -0500
+
+64 files changed,  16,179 insertions(+),   8,438 deletions(-)
+32 files changed,   2,295 insertions(+),     426 deletions(-) [yum rpmUtils bin *.py]
+}}}

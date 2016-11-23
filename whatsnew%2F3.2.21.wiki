@@ -1,0 +1,42 @@
+{{{
+#!html
+<h1 style="text-align: center;">
+ <a style="position: absolute; left:  0; font-size: 50%;" href="3.2.20">3.2.20 &larr;</a>
+  What's new in 3.2.21
+ <a style="position: absolute; right: 0; font-size: 50%;" href="3.2.22">&rarr; 3.2.22</a>
+</h1>
+}}}
+
+== User Interface changes ==
+
+ *   Add '''reinstall''' command.
+ *   Can include the same file in multiple config. sections.
+ *   Write a '''usable, utf8 aware, textwrap''' for "info" description and others.
+   * Also created a utf8 aware "character width" which is also now used instead of counting bytes.
+ *   When --showduplicates is on, we'll now show reinstall available versions.
+ *   Add '''configurable color/highlighting''' for list/info/groupinfo/search.
+ *   Add --color option, to force ANSI colors to pipe's etc.
+ *   Highlight list available data for newest/older/available.
+ *   Highlight list install "extra" packages.
+ *   Dynamic columns in repolist, and never truncate the repoid.
+ *   Add Repo line into search -v output.
+ *   Do the update available highlighting in yum list installed.
+ *   Parse arguments to grouplist, to only matches (like list/etc.).
+ *   check-update -v shows obsoletes.
+
+== Resource improvement changes ==
+
+== API changes ==
+
+ *  Add utf8_width() functions and use it to get nice output for non-en.
+ *   Add reinstall_available and old_available to doPackageLists().
+ *  Change the default for obsoletes processing to be true.
+ *  Work with the latest version of MM metalink support.
+
+=== Devleoper stats. ===
+
+{{{
+3.2.21 - 131 commits: Fri Feb 8 14:03:54 2009 -0500
+40 files changed,  7,044 insertions(+),  4,058 deletions(-)
+23 files changed,  1,301 insertions(+),    322 deletions(-) [yum rpmUtils bin *.py]
+}}}

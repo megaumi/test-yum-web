@@ -1,0 +1,102 @@
+= Caching remote data for multiple computers =
+
+One of the things most people want is a way to not have to download the data yum/preupgrade/etc. needs multiple times over their connection to the internet. Speed is the major motivator, but also some people pay per. byte and so cost is a factor. This page lists the "best practice" available options, and their pros/cons:
+
+ * Pulp: http://www.pulpproject.org/
+  * Pros
+   * Maintained upstream project, widely used
+
+ * Create a mirror, using rsync/reposync, and point your computers at that.
+  * Pros
+   * Post setup it "just works" and everything is immediate.
+  * Cons
+   * Requires setting up a local webserver to serve the data.
+   * Requires syncing the data.
+   * Requires altering each computer to point to your local mirror.
+   * Requires downloading everything.
+
+ * Create a mirror, using rsync/reposync, and register with MirrorManager.
+  * Pros
+   * Zero configuration, on the client side.
+   * Post setup it mostly just works and everything should be immediate.
+  * Cons
+   * Requires setting up a local webserver to serve the data.
+   * Requires syncing the data.
+   * If the server is down or the data becomes "out of date" then metalinks/MM will route you to an external mirror.
+   * Requires downloading everything.
+
+ * Configure a Squid instance: http://ma.ttwagner.com/lazy-distro-mirrors-with-squid/ and http://dummdida.tumblr.com/post/91342527085
+
+ * Install "IntelligentMirror", and register with MirrorManager.
+  * Pros
+   * Zero configuration, on the client side.
+   * Post setup it mostly just works and everything should be immediate.
+   * Only downloads what is required by the users.
+   * Fully automated server side, once setup/working.
+  * Cons
+   * Requires setting up a local Squid + Apache-httpd + IntelligentMirror to serve the data.
+   * If the server is down then metalinks/MM will route you to an external mirror.
+   * Only intelligently caches packages, not metadata.
+
+ * Mount /var/cache/yum over NFS and set keepcache=1 in yum.
+  * Pros
+   * No server side.
+   * Only downloads what is required by the users.
+  * Cons
+   * sqlite (and hence yum) doesn't like being on NFS.
+   * running yum in parallel (over any of the computers) is a bad idea.
+   * NFS.
+   * Requires setting up NFS mounts on each computer.
+   * Requires altering each computer to point to your local mirror.
+   * Cache will grow "without bound".
+   * preupgrade/etc. doesn't easily share data with "normal" yum, even if they need the same data.
+   * Running x86 and x86_64 isn't possible.
+
+ * rsync /var/cache/yum and set keepcache=1 in yum.
+  * Pros
+   * No server side.
+   * Only downloads what is required by the users.
+  * Cons
+   * Requires running the sync before/after each use of yum that downloads anything.
+   * Requires altering each computer to point to your local mirror.
+   * Cache will grow "without bound".
+   * preupgrade/etc. doesn't easily share data with "normal" yum, even if they need the same data.
+   * Running x86 and x86_64 isn't possible.
+
+ * Mount /var/cache/yum/*/packages over NFS and set keepcache=1 in yum.
+  * Pros
+   * No server side.
+   * Only downloads what is required by the users.
+  * Cons
+   * running yum in parallel isn't guaranteed to work.
+   * NFS.
+   * Requires setting up NFS mounts on each computer.
+   * Requires significant configuration, for N mounts points (where you have N repos). Also needs to be changed everytime to change the repos. on the clients.
+   * Requires altering each computer to point to your local mirror.
+   * Cache will grow "without bound".
+   * preupgrade/etc. doesn't easily share data with "normal" yum, even if they need the same data.
+   * Doesn't share metadata/headers/etc.
+
+ * rsync /var/cache/yum/*/packages and set keepcache=1 in yum.
+  * Pros
+   * No server side.
+   * Only downloads what is required by the users.
+  * Cons
+   * Requires running the sync before/after each use of yum that downloads anything.
+   * Requires altering each computer to point to your local mirror.
+   * Requires significant configuration, for N sync points (where you have N repos). Also needs to be changed everytime to change the repos. on the clients.
+   * Cache will grow "without bound".
+   * preupgrade/etc. doesn't easily share data with "normal" yum, even if they need the same data.
+   * Doesn't share metadata/headers/etc.
+
+ * (beta) avahi-packages-server.py and yum avahi support (see: http://james.fedorapeople.org/yum/avahi)
+  * Pros
+   * Zero configuration client.
+   * Zero configuration server.
+   * Only downloads what is required by the users.
+  * Cons
+   * Not upstream yet (still beta).
+   * A client that doesn't run the avahi server side doesn't share it's downloads (so all clients need to run the "server").
+   * Requires working avahi on the network.
+
+See also this old LWN article: http://lwn.net/Articles/318658/

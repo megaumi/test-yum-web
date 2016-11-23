@@ -1,0 +1,11 @@
+Given a filename of an rpm parse out the major information that's available:
+
+{{{
+#!python
+from rpmUtils.miscutils import splitFilename
+
+myfn = 'a2ps-4.13b-57.1.el5.src.rpm'
+
+(name, ver, rel, epoch, arch) = splitFilename(myfn)
+
+}}}

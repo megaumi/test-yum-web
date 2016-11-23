@@ -1,0 +1,41 @@
+{{{
+#!html
+<h1 style="text-align: center;">
+ <a style="position: absolute; left:  0; font-size: 50%;" href="3.2.11">3.2.11 &larr;</a>
+  What's new in 3.2.12
+ <a style="position: absolute; right: 0; font-size: 50%;" href="3.2.13">&rarr; 3.2.13</a>
+</h1>
+}}}
+
+== User Interface changes ==
+
+ *  Full pkg.verify support
+ *  Change compare_providers() to do more than just shortest wins
+ *   Obsoletes fixes, so install X actually installs Y
+ *   Pre-load system repo-data for non-root users
+ *   Double pkgs in excludes fix
+ *   Super-H arch. support
+ *  package sorting uses rpm version sorting
+
+== Resource improvement changes ==
+
+ *   share data between pkgs
+ *   exclude processing direct to SQL
+
+== API changes ==
+
+ *  Full pkg.verify support
+ *  Change compare_providers() to do more than just shortest wins
+ *   Obsoletes fixes, so install X actually installs Y
+ *   Pre-load system repo-data for non-root users
+ *   Double pkgs in excludes fix
+ *   Super-H arch. support
+ *  package sorting uses rpm version sorting
+
+=== Developer stats. ===
+
+{{{
+3.2.12 -  79 commits: Mon Mar 3 13:31:43 2008 -0500
+29 files changed,  9,321 insertions(+),   696 deletions(-)
+17 files changed,    910 insertions(+),   458 deletions(-) [main]
+}}}

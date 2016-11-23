@@ -1,0 +1,35 @@
+= Current released versions of Yum, and related tools =
+
+    * [http://yum.baseurl.org/download/ All yum upstream releases]:
+       * [http://yum.baseurl.org/download/3.4/ Stable branch]: yum-3.4.3
+       * [http://yum.baseurl.org/download/3.2/ Older Stable branch]: yum-3.2.29
+       * [http://yum.baseurl.org/download/2.4/ Really older, but in use]:  yum-2.4.3
+    * [http://yum.baseurl.org/download/yum-metadata-parser/ yum-metadata-parser]: 1.1.4 - C-based metadata parser to quickly parse xml metadata into sqlite databases.
+    * [http://yum.baseurl.org/download/yum-utils/ yum-utils]: 1.1.27 - Collection of plugins and utilities that augment any system using yum.
+
+== What's new in yum-3.2.z ==
+
+Find out what user level features are new in each version.  Note though that distribution packages often backport specific features to earlier versions; although these pages will give a starting point.
+
+  * [wiki:whatsnew/3.4.3 Summary of changes made for yum-3.4.3]
+    * Older versions (3.4.z):
+      * [wiki:whatsnew/3.4.2 Summary of changes made for yum-3.4.2]
+      * [wiki:whatsnew/3.4.1 Summary of changes made for yum-3.4.1]
+      * [wiki:whatsnew/3.4.0 Summary of changes made for yum-3.4.0]
+    * Older versions (3.2.z):
+      * [wiki:whatsnew/3.2.29 Summary of changes made for yum-3.2.29]
+      * [wiki:whatsnew/3.2.28 Summary of changes made for yum-3.2.28]
+      * [wiki:whatsnew/3.2.27 Summary of changes made for yum-3.2.27]
+      * [wiki:whatsnew/3.2.26 Summary of changes made for yum-3.2.26]
+      * [wiki:whatsnew/3.2.25 Summary of changes made for yum-3.2.25]
+      * [wiki:whatsnew/3.2.24 Summary of changes made for yum-3.2.24]
+      * [wiki:whatsnew/3.2.23 Summary of changes made for yum-3.2.23]
+      * [wiki:whatsnew/3.2.22 Summary of changes made for yum-3.2.22]
+      * [wiki:whatsnew/3.2.21 Summary of changes made for yum-3.2.21]
+      * [wiki:whatsnew/3.2.20 Summary of changes made for yum-3.2.20]
+
+    * [http://yum.baseurl.org/gitweb?p=yum.git;a=shortlog;h=refs/heads/yum-3_2_X Full developer changes for yum-3.2.z]
+
+== What's new in yum-utils-1.1.z ==
+
+    * [http://yum.baseurl.org/gitweb?p=yum-utils.git;a=shortlog Full developer changes for yum-utils-1.1.z]

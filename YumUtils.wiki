@@ -1,0 +1,58 @@
+= yum-utils =
+yum-utils is a collection of utilities and plugins extending and supplementing yum in different ways.
+
+== Utilities ==
+All the utilities are contained in the main '''yum-utils''' package.
+
+|| '''Utility'''             ||'''Description''' ||
+|| [wiki:YumUtils/DebugInfoInstall debuginfo-install] || install debuginfo packages and their dependencies||
+|| [wiki:YumUtils/FindReposOfInstall find-repos-of-install] || show which repository the currently installed packages came from||
+|| [wiki:YumUtils/PackageClenup package-cleanup] || manage package cleanup, duplicates, orphaned packages and outstanding dependency problems||
+|| [wiki:YumUtils/RepoGraph repo-graph] || outputs a full package dependency list in dot format||
+|| [wiki:YumUtils/RepoRSS repo-rss] || generates an RSS feed from one or more repositories||
+|| [wiki:YumUtils/RepoClosure repoclosure] || reads metadata of repositories, checks dependencies and displays list of unresolved dependencies||
+|| [wiki:YumUtils/RepoDiff repodiff] || takes two or more repositories, returns a list of added, removed or changed packages||
+|| [wiki:YumUtils/RepoManage repomanage] || manages a directory of rpm packages, returns a list of newest or oldest packages in a directory||
+|| [wiki:YumUtils/RepoQuery repoquery] || query yum repositories and get additional information on the them||
+|| [wiki:YumUtils/RepoSync reposync] || synchronize a remote yum repository to a local directory using yum to retrieve packages||
+|| [wiki:YumUtils/RepoTrack repotrack] || track packages and its dependencies and downloads them||
+|| [wiki:YumUtils/VerifyTree verifytree] || verify that a local yum repository is consistent||
+|| [wiki:YumUtils/YumBuildDep yum-builddep] || installs missing dependencies to build a specified package||
+|| [wiki:YumUtils/YumCompleteTransaction yum-complete-transaction] || finds incomplete or aborted yum transactions and attempts to complete them||
+|| [wiki:YumUtils/YumDebugDump yum-debug-dump]|| Dump infomation about the systems yum configuration into a tarball ||
+|| [wiki:YumUtils/YumDebugRestore yum-debug-restore]|| Works with the tarball generated above||
+|| [wiki:YumUtils/YumGroupsManager yum-groups-manager]|| generates the metadata for yum groups||
+|| [wiki:YumUtils/YumDownloader yumdownloader] || downloads packages from yum repositories including source RPMs||
+
+== Plugins ==
+The plugins is contained in a package for each plugin, so they can be installed at choice.
+The package is named yum-<pluginname>.
+
+See the this [wiki:WritingYumPlugins: guide] for more information about writing your own plugins
+
+
+|| '''Plugin'''          ||   ||'''Description''' ||
+|| [wiki:YumUtils/Plugins/Aliases aliases] || [http://baseurl.org/gitweb/?p=yum-utils.git;a=tree;hb=HEAD;f=plugins/aliases git] || Yum plugin to enable aliases filters ||
+|| [wiki:YumUtils/Plugins/Allowdowngrade allowdowngrade] || [http://baseurl.org/gitweb/?p=yum-utils.git;a=tree;hb=HEAD;f=plugins/allowdowngrade git] || Yum plugin to enable manual downgrading of packages ||
+|| [wiki:YumUtils/Plugins/Basearchonly basearchonly] || [http://baseurl.org/gitweb/?p=yum-utils.git;a=tree;hb=HEAD;f=plugins/basearchonly git] || Yum plugin to let Yum install only basearch packages. ||
+|| [wiki:YumUtils/Plugins/Changelog changelog] || [http://baseurl.org/gitweb/?p=yum-utils.git;a=tree;hb=HEAD;f=plugins/changelog git] || Yum plugin for viewing package changelogs before/after updating ||
+|| [wiki:YumUtils/Plugins/Downloadonly downloadonly] || [http://baseurl.org/gitweb/?p=yum-utils.git;a=tree;hb=HEAD;f=plugins/downloadonly git] || Yum plugin to add downloadonly command option ||
+|| [wiki:YumUtils/Plugins/Fastestmirror fastestmirror] || [http://baseurl.org/gitweb/?p=yum-utils.git;a=tree;hb=HEAD;f=plugins/fastestmirror git] || Yum plugin which chooses fastest repository from a mirrorlist ||
+|| [wiki:YumUtils/Plugins/Fedorakmod fedorakmod] || [http://baseurl.org/gitweb/?p=yum-utils.git;a=tree;hb=HEAD;f=plugins/fedorakmod git] || Yum plugin to handle fedora kernel modules. ||
+|| [wiki:YumUtils/Plugins/Filterdata filter-data] || [http://baseurl.org/gitweb/?p=yum-utils.git;a=tree;hb=HEAD;f=plugins/filter-data git] || Yum plugin to list filter based on package data ||
+|| [wiki:YumUtils/Plugins/Kernelmodule kernel-module] || [http://baseurl.org/gitweb/?p=yum-utils.git;a=tree;hb=HEAD;f=plugins/kernel-module git] || Yum plugin to handle kernel-module-foo type of kernel module ||
+|| [wiki:YumUtils/Plugins/Keys keys] || [http://baseurl.org/gitweb/?p=yum-utils.git;a=tree;hb=HEAD;f=plugins/keys git] || Yum plugin to deal with signing keys ||
+|| [wiki:YumUtils/Plugins/Listdata list-data] || [http://baseurl.org/gitweb/?p=yum-utils.git;a=tree;hb=HEAD;f=plugins/list-data git] || Yum plugin to list aggregate package data ||
+|| [wiki:YumUtils/Plugins/Mergeconf merge-conf] || [http://baseurl.org/gitweb/?p=yum-utils.git;a=tree;hb=HEAD;f=plugins/merge-conf git] || Yum plugin to merge configuration changes when installing packages ||
+|| [wiki:YumUtils/Plugins/Priorities priorities] || [http://baseurl.org/gitweb/?p=yum-utils.git;a=tree;hb=HEAD;f=plugins/priorities git] || plugin to give priorities to packages from different repos ||
+|| [wiki:YumUtils/Plugins/Protectpackages protect-packages] || [http://baseurl.org/gitweb/?p=yum-utils.git;a=tree;hb=HEAD;f=plugins/protect-packages git] || Yum plugin to prevents Yum from removing itself and other protected packages ||
+|| [wiki:YumUtils/Plugins/Protectbase protectbase] || [http://baseurl.org/gitweb/?p=yum-utils.git;a=tree;hb=HEAD;f=plugins/protectbase git] || Yum plugin to protect packages from certain repositories. ||
+|| [wiki:YumUtils/Plugins/Refreshupdatesd refresh-updatesd] || [http://baseurl.org/gitweb/?p=yum-utils.git;a=tree;hb=HEAD;f=plugins/refresh-updatesd git] || Tell yum-updatesd to check for updates when yum exits ||
+|| [wiki:YumUtils/Plugins/Security security] || [http://baseurl.org/gitweb/?p=yum-utils.git;a=tree;hb=HEAD;f=plugins/security git] || Yum plugin to enable security filters ||
+|| [wiki:YumUtils/Plugins/Skipbroken skip-broken] || [http://baseurl.org/gitweb/?p=yum-utils.git;a=tree;hb=HEAD;f=plugins/skip-broken git] || Yum plugin to handle skiping packages with dependency problems ||
+|| [wiki:YumUtils/Plugins/Tmprepo tmprepo] || [http://baseurl.org/gitweb/?p=yum-utils.git;a=tree;hb=HEAD;f=plugins/tmprepo git] || Yum plugin to add temporary repositories ||
+|| [wiki:YumUtils/Plugins/Tsflags tsflags] || [http://baseurl.org/gitweb/?p=yum-utils.git;a=tree;hb=HEAD;f=plugins/tsflags git] || Yum plugin to add tsflags by a commandline option ||
+|| [wiki:YumUtils/Plugins/Upgradehelper upgrade-helper] || [http://baseurl.org/gitweb/?p=yum-utils.git;a=tree;hb=HEAD;f=plugins/upgrade-helper git] || Yum plugin to help upgrades to the next distribution version ||
+|| [wiki:YumUtils/Plugins/Verify verify] || [http://baseurl.org/gitweb/?p=yum-utils.git;a=tree;hb=HEAD;f=plugins/verify git] || Yum plugin to add verify command, and options ||
+|| [wiki:YumUtils/Plugins/Versionlock versionlock] || [http://baseurl.org/gitweb/?p=yum-utils.git;a=tree;hb=HEAD;f=plugins/versionlock git] || Yum plugin to lock specified packages from being updated ||
+

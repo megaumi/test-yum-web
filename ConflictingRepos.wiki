@@ -1,0 +1,33 @@
+= Managing conflict repositories =
+
+The generic definition of conflicting repositories is where you have "repo Base" that contains package AA, AB, AC and "repo Extension" which contains AA, BA, BB, BC. Here the AA package is available from both repositories, but there are other packages only available in Extension, so you need some plan for what to do about AA (and any other packages).
+
+== Disable: One wrong is one to many ==
+
+The easiest thing to do is just disable the non-main repository. Well managed repositories don't conflict, so if you leave the Extension repository enabled you are assuming that even though the repo. got something obviously wrong it will still be providing packages good enough for you to use. An extension to this is to leave the repository disable, but whenever you need to install/update from it use --enablerepo temporarily.
+
+== Do nothing: It's "broken" by design ==
+
+While it's often wrong, there are some cases where the entire point of a repo. is to upgrade a specific set of packages from Base. In this case there should be '''no''' extra packages, that aren't required by the upgrade. Also the set of packages that are being upgraded should be limited to a specific usecase.
+
+== Exclude/Includepkgs: Solve small problems, fast ==
+
+If the Extension repo. is just a bit broken, or you want just one or two packages from it, you can "exclude" the bad packages or "includepkgs" the good ones. This is a core yum feature, and is fast.
+
+The downside is that it's manual, if you "exclude" and more bad packages are added you have to update the configuration. Dito. if you "includepkgs" and newer versions have more deps. (although this is a much more visible problem).
+
+== Versionlock: Hold back a small number of packages, fast ==
+
+If you mostly want to use the extension repo. but want to keep a small number of packages from Base then another option is to use the "versionlock" plugin. This will automatically exclude any versions of a package that isn't one of the specified versions (you can specify more than one version to lock to).
+
+One downside is that this requires installing a plugin. A "feature" is that you won't see any newer versions from the Base repo. either. However given that there is a versionlock command, to view/alter the configuration file, this can be somewhat easier to update than using the "exclude" configuration.
+
+== Createrepo: Fix the brokenness ==
+
+If you really need a few packages from a large broken repo. one good solution is to just download the packages (Eg. yumdownloader --enablerepo) and then create your own repo. with just those packages. Obviously you then won't get any updates, unless you monitor for them and download the new versions, however you also won't get any breakages.
+
+== Priorities: For when all else fails, currently slow ==
+
+The giant hammer to solve the problem is the "priorities" plugin, this will automatically apply the excludes to the repo. with the lower priority.
+
+I generally don't recommend this approach. It's slow, as it has to look at all the packages in both repositories (although this could be improved). It will often be used on repositories that are so bad they have other problems (see Disable, above). You can easily get weird dependency problems due to all the excluded packages. But, if all the other solutions aren't good, it can work.

@@ -1,0 +1,144 @@
+= Yum group's overview =
+
+How to manage groups of packages, like almost everything to do with package management, is a tradeoff between competing positives and negatives of the different solutions. The three most significant aspects to managing groups of packages tend to be: 1) Does it have the minimum features you want. 2) Does it do what the user expects. 3) Can you explain how it works.
+
+== Use packages (metapackages) ==
+
+This is the simplest method, and has the bare minimum features. You create a package which exists just to "require" other packages. This is not unheard of even in Fedora, Eg. the "git" package and "git-core". You can use std. naming to try and work out what all your standard groups are called (AIUI this is what apt/dpkg does).
+
+=== Pros. ===
+
+ * Has the bare minimum feature of being able to "install grp-foo" and get a bunch of packages installed.
+
+ * "install" does what the user expects.
+
+ * It's very easy to explain (it's just a package).
+
+ * Extra feature: Allows packages to "require a group".
+
+ * Extra feature: "yum upgrade" will automatically upgrade any installed groups, and install new packages.
+
+=== Cons. ===
+
+ * Removing the group doesn't remove the packages, without outside help. Eg. "yum install git" && "yum remove git".
+
+ * If you install a "grp-foo", every package is a requirement. This means that removing any package from the group will immediately remove the group.
+
+ * Each group can only come from a single source. Eg. If you have two repos. A and B that both want to have a group called "mystuff" then you can only have a single package called "mystuff" and it has to come from either A or B.
+
+ * The UI tends to be full of annoyingly leaky abstraction layers, Eg. "yum group info foo" is really repoquery -qr metagrp-foo. "yum remove metagrp-foo" is actually removing a group.
+
+ * rpmdb versions will be different depending on just if "a group" is installed or not, as most people think of groups as a way of dealing with packages it is bad to have "the same packages" but different rpmdb versions.
+
+ * Extra feature: Allows packages/groups to "require/conflict/obsolete" other groups.
+
+
+
+== Simple groups, defined via. repos. (command line substitution) ==
+
+The basic idea is that as part of the repo. metadata we can have a mapping of "group id" to a list of packages. Yum can then download this mapping from all repos. combine it into a single mapping and use that as a simple substitution for "install/remove". At it's basic this is similar to metapackages, without a few of the technical/UI warts.
+This works very well for N numbers of groups that contain different packages, however there are problems/confusion when multiple groups contain the same packages.
+
+The yum implementation is a little less simple, due to having "optional" lists of packages for a group. But most of the problems aren't fixable even if that were changed.
+
+=== Pros. ===
+
+ * Has the pretty good features, as you can install or remove a group.
+
+ * "install" does what the user expects, and "remove" does what the user wants more often than metapackages.
+
+ * It's very easy to explain, if the user asks, as "yum install @foo" is the same as "yum install $(repoquery -gl foo).
+
+=== Cons. ===
+
+ * "remove" when two groups contain the same package(s) is very unintuitive to the uninitiated. As is the general case when a group is "installed", that contains packages you already have, and then removed taking other packages with it. The failure case of "remove packages I didn't want removed" is thought of as much worse than "didn't remove any packages".
+
+ * If you install a "foo", every package is a requirement. This means that removing any package from the group will immediately (silently) remove the group (but leave all the other packages installed.
+
+ * "yum upgrade" doesn't install packages added to installed groups (in theory this is possible, but it's complicated).
+
+
+== Groups are stored objects, defined by repos. ==
+
+This is kind of a merge of metapackages and simple groups, we have the same mapping defined by the repos. but on "yum group install" we store what group got installed (and the packages it contained) for access by yum. Each "installed group" contains just an id and a list of packages
+
+=== Pros. ===
+
+ * remove, as well as install, does what the users expect. install followed immediately by remove will work the same as "yum history undo last".
+
+ * Don't need to access the repos. (and thus. the network) to perform "yum group remove"
+
+ * You can install a group, but leave out a member (or even mark it to not be installed in the first place). And it's not reinstalled.
+
+ * "yum group upgrade" can install new members of the group, without forcing the install of unneeded members.
+
+ * "yum upgrade" will upgrade all groups.
+
+=== Cons. ===
+
+ * Installed packages now have 2 states: installed, installed as part of group XYZ.
+
+ * Users have to actively manage these installed groups, changing a packages state or blacklisting a package from being installed by a group.
+
+ * the groups data now needs to be downloaded a lot more often (most notably anytime "yum upgrade" is run).
+
+ * This is the hardest to explain to new users, even though it mostly does what they expect.
+
+ * We are storing more data outside of the rpmdb that is really part of the transaction.
+
+= Dealing with the objects =
+
+Note that as you move to groups as an object there are times when you have to deal with that object and no others. Eg. you can now have a group "foo" installed, but it contain no installed packages. Or you want to remove a group, but not any of the packages that are in that group, or you want to add an already installed package to an already installed group.
+
+Currently the "best" way to do this is with a bunch of yum commands that start with "mark" under the groups subcommand. Eg.
+
+ *    yum group mark-install foo
+
+will make yum believe that a group object is installed without a transaction (or altering any packages).
+
+ *    yum group mark-remove foo
+
+will make yum believe that a group object is not installed without a transaction (or altering any packages).
+
+ *    yum group mark-packages foo pkgA pkgB...
+
+will make yum believe that "pkgA pkgB..." were installed as part of the group "foo".
+
+
+= Suggested tweaks from the above =
+
+== Tweak: groupremove_leaf_only=True ==
+
+This tweaks simple groups so that "yum group remove foo" will only remove packages that aren't required by anything else. This somewhat helps with the problem of two groups listing a single package, but only in the case where that package is required by another package (which is often not the case, or there would be no need to list the package explicitly in the group).
+
+== Often Suggested Tweak: Use clean_requirements_on_remove=True with metapackages ==
+
+This tweaks metapackages so that "yum group remove foo" would automatically enable the clean_requirements_on_remove configuration, and thus. metapackage removal would more often "do the right thing". The problem here is that we'd have to accept all the other problems with metapackages, and even after that clean_requirements_on_remove often has weird edgecases where things stay behind (or are removed due to being marked incorrectly).
+
+== Often Requested Tweak: Don't remove packages in other groups, on group remove ==
+
+This tweaks simple groups so that "yum group remove foo" will only remove packages that aren't in any other group. The main problem with this idea is that you are relying on what '''other groups''' are seen as "installed" to work out what to do when removing a group. So if a package is missing from another group, and thus. the group is not marked as installed, the package is removed anyway when the user thought it wouldn't be. On the other side is a group is installed and then removed, you will often not remove all the things installed because some of those packages will belong to other groups that are marked as installed.
+
+With this you basically get the worst parts of simple groups and metapackages, with regard to remove behaviour. And it's impossible to explain to users what will happen.
+
+
+== Often Suggested Tweak: Have packages belong to more than one stored group object ==
+
+This tweaks groups as stored objects so that packages can belong to more than a single group, and "yum group remove foo" will only remove packages that belong to just that group. The problem is that this is significantly more complicated to implement, and for the user the grasp. Also while there are cases where you'd want this to happen there are cases where you don't, and it's far from obvious which of those two cases are more common.
+To understand one problem with this think about this set of yum operations:
+
+{{{
+install @group -pkg
+install pkg
+group remove group
+}}}
+
+...now when yum performs the "remove group" operation "pkg" should still be installed (because it wasn't part of the group) and with groups as stored objects that is true. Now to change the above operations slightly:
+
+{{{
+group install group1
+group install group2
+group remove  group1
+}}}
+
+...comparing to the previous example it's "obvious" that all of "group1" should be removed in this case.

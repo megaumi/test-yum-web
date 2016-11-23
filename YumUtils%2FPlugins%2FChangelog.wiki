@@ -1,0 +1,18 @@
+= changelog =
+This plugin adds a command line option to allow viewing package changelog
+deltas before or after updating packages.
+
+
+== How to install ==
+Use the following command to install the changelog plugin
+{{{
+yum install yum-changelog
+}}}
+
+== Examples ==
+
+== Command line options ==
+
+== Config file options ==
+
+== Notes ==

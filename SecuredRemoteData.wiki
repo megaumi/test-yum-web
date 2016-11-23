@@ -1,0 +1,48 @@
+= Signed data, SSL/GPG/x509/etc. =
+
+== SSL ==
+
+When yum-3.2.29 connects to an "https" URL, it automatically verifies that the server has a valid SSL certificate for the hostname given. The  configuration option "sslverify" controls if this check is performed (if it's false then a "https" URL is equivalent to a "http" URL). The configuration option "sslcacert" points to the location of the "Certificate Authority" that the remote SSL cert. should be checked against (this is often fine as the default).
+
+Also yum-3.2.29 has the ability to authenticate the client machine to the server, using an SSL certificate. This is controlled using the two configuration options "sslclientcert" and "sslclientkey".
+
+== GPG Keys ==
+
+Yum also has the ability to check GPG signatures on packages, and repositories.
+
+=== GPG keys for packages ===
+
+The main point to understand about GPG checking for packages is that the GPG signature is embedded within the package, and the GPG keys are stored in the rpmdb. There is no secure API to ask "What key is package X signed with" you can only ask "Is package X signed with a key in the rpmdb" and "Does key Y exist in the rpmdb".
+Also note that this means that a package can only be signed by one key, and that changing the signature changes the packages.
+
+Yum-3.2.29 performs a number of steps when it downloads a package from a repository configured with "gpgcheck = true" (the default).
+
+ 1. After the first package from a repository is downloaded, a simple "is this package signed with a known gpgkey" call is done. If it is, nothing is done. If it isn't a warning is displayed to the user. This is purely informational.
+
+ 2. Before the transaction starts yum checks that the package is signed with a known gpgkey (one already installed in the rpmdb), if it is the package is valid and no other steps are performed. If not then it continues to #3.
+
+ 3. Yum downloads all the files given in the "gpgkey" data for the repository that the package comes from. Yum parses that, ignoring any keys already present in the rpmdb. If there are no new keys, yum will fail.
+
+ 4. If there is a "gpgcakey" specified for the repository, then yum will download all the files given in the "gpgcakey" data. Yum parses that, ignoring any keys already present in that repositories gpg keyring. If there are no gpgcakeys installed after parsing the file, yum will fail. If there are new gpgcakeys, then if they are already imported as CA keys for another repo. they are automatically imported. If this is the first tiem we've seen this CA key the user is asked if he wants to install the key (unless -y is given). If he says no to *any* key, yum fails (although all imported keys stay in the repo. gpg keyring).
+
+ 5. If there is at least one valid "gpgcakey", yum will try to download a "gpgkey".asc file. If that doesn't exists, yum moves on to step #6 as though there was no gpgcakey. If it does exist then the "gpgkey" is tested against the "gpgcakey" and if it passes it's added to the rpmdb, if it fails then yum fails (although all imported keys stay in the rpmdb).
+
+ 6. If there are new gpgkeys, then the user is asked if he wants to install each key (unless -y is given). If he says no to *any* key, yum fails.
+
+ 7. After installing any new keys, yum again checks the package signature against the gpgkeys in the rpmdb. If this fails, yum fails.
+
+=== GPG keys for repositories ===
+
+Signed repos. work much like signed packages, except the repomd.xml for the repo. has an external repomd.xml.asc signature. Also all the GPG processing happens much earlier in the yum cycle (as it's checked when repos. are setup, and not cached). The signed keys are per. repo. and this means that there are "problems" if non-root users need to access signed repos. before root has accessed (and thus. imported) the GPG keys for those repos.
+
+Note that the configuration option repo_gpgcheck specifies whether the repo. has to have it's repometadata signed, or not.
+
+== x509 ==
+
+There is a plan to move from GPG signing of packages to x509 signing of packages. Note that with x509 signing the signature will be external from the package (although we may sign the entire package, or just the headers). There are three main advantages to this:
+
+ 1. The x509 APIs have support for key revocation and expiration, etc.
+
+ 2. Packages can be signed by more than one key, or re-signed, without changing the package.
+
+ 3. Related to both #1 and #2, the x509 APIs will be distinct from the rpm APIs ... so we can get a lot of information about the keys, Eg. import just the needed keys etc.

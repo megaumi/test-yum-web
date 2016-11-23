@@ -1,0 +1,25 @@
+This will get you the system version information that yum knows about.
+
+{{{
+
+# Directly... NOTE that this disregards some yum specific information (and assumes redhat-release):
+pkg_provide = "redhat-release"
+import rpm
+
+ts = rpm.TransactionSet()
+# This can throw exceptions, depending on rpm version, have fun... :)
+idx = ts.dbMatch('provides', pkg_provide)
+if idx.count() == 0:
+    releasever = '$releasever'
+else:
+    hdr = idx.next()
+    releasever = hdr['version']
+print '$releasever =', releasever
+
+# Via. yum
+import yum
+yb = yum.YumBase()
+yb.conf
+print '$releasever =', yb.yumvar['releasever']
+
+}}}

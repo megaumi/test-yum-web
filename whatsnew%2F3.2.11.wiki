@@ -1,0 +1,46 @@
+{{{
+#!html
+<h1 style="text-align: center;">
+ <a style="position: absolute; left:  0; font-size: 50%;" href="3.2.10">3.2.10 &larr;</a>
+  What's new in 3.2.11
+ <a style="position: absolute; right: 0; font-size: 50%;" href="3.2.12">&rarr; 3.2.12</a>
+</h1>
+}}}
+
+== User Interface changes ==
+
+ *  i18n support
+ *   Change cmd: clean dbcache to remove xml too
+ *  Fix pirut/API search multi versions problem
+ *  Add reinstall
+ *   Create needed dirs. for logfile (chroot)
+ *   Plugins output
+ *   Support for comps.gz files
+ *  Add multilib_policy config.
+ *  Add committer/URL to info.
+ *   Fix nice help command
+
+== Resource improvement changes ==
+
+ *   Speedup rpmsack
+ *   Shared installed repo.
+ *   Support for comps.gz files
+
+== API changes ==
+
+ *  i18n support
+ *   Change cmd: clean dbcache to remove xml too
+ *  Fix pirut/API search multi versions problem
+ *  Add reinstall
+ *   Support for comps.gz files
+ *  Add multilib_policy config.
+ *   Add validate param. to getReposFromConfigFile()
+ *   Add pkg.verify()
+
+=== Developer stats. ===
+
+{{{
+3.2.11 -  86 commits: Fri Feb 8 15:34:24 2008 -0500
+37 files changed,  9,294 insertions(+), 2,545 deletions(-)
+20 files changed,  1,138 insertions(+),   579 deletions(-) [main]
+}}}

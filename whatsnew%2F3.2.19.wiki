@@ -1,0 +1,44 @@
+{{{
+#!html
+<h1 style="text-align: center;">
+ <a style="position: absolute; left:  0; font-size: 50%;" href="3.2.18">3.2.18 &larr;</a>
+  What's new in 3.2.19
+ <a style="position: absolute; right: 0; font-size: 50%;" href="3.2.20">&rarr; 3.2.20</a>
+</h1>
+}}}
+
+== User Interface changes ==
+
+ *   Fix "maybe you meant" to also include installed packages.
+ *   Fix "maybe you meant" with multiple installs to not output all packages.
+ *   Highlight installed applications that have updates, in list/info/groupinfo.
+ *   Dynamic size the fields in the Transaction text, and no chopping of text.
+ *  Sort package requirements, this works around a few old "features".
+ *   Allow the syslog configuration to be altered.
+ *  Fix: yum list installed-only-pkg
+
+== Resource improvement changes ==
+
+ *   Change list extras to do O(1) lookups.
+ *   Don't do a single large excludeArch() query.
+ *   Don't checksum "old" .sqlite files in repos on open.
+ *   Only search the name field, if we can, for exclude/list/info/etc.
+ *   Don't walk all possible config. options.
+
+== API changes ==
+
+ *   Auto unlock on YumBase.__del__
+ *   Don't allow repos. called "installed".
+ *   Revert the conditional API break from 3.2.18.
+ *   Do setup/close when we add/remove a repo object.
+ *   Sort package requirements, this works around a few old "features".
+ *   Fix: yum list installed-only-pkg
+
+
+=== Developer stats. ===
+
+{{{
+3.2.19 -  57 commits: Tue Aug 26 15:41:47 2008 -0400
+23 files changed,  2,667 insertions(+),   176 deletions(-)
+18 files changed,    897 insertions(+),   174 deletions(-) [main]
+}}}

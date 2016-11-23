@@ -1,0 +1,106 @@
+= Yum groups and repositories =
+
+'''Note that this page is out of date, and refers to how yum acted before the "yum groups" sub-command and the group_command configuration feature were added.'''
+
+Yum supports the group commands
+  * grouplist
+  * groupinfo
+  * groupinstall
+  * groupremove
+  * groupupdate
+
+Groups are read from the "group" xml metadata that is optionally available from
+each repository. If yum has no repositories which support groups then none of 
+the group operations will work. 
+
+
+ * grouplist
+   {{{
+      yum grouplist [hidden]
+   }}}
+   
+   This will list the installed and available groups for your system in two
+   separate lists. If you pass the optional 'hidden' argument then all of 
+   the groups which are set to 'no' in the group xml <uservisible> tag.
+
+ * groupinfo
+  {{{ 
+     yum groupinfo groupname
+  }}}
+  
+  This will give you detailed information for each group including:
+  description, mandatory, default and optional packages.
+
+ * groupinstall, groupupdate
+  {{{ 
+     yum groupinstall groupname
+     yum groupupdate groupname
+  }}}
+
+  Despite their differing names both of these commands perform the same
+  function. They will attempt to install/update all of the packages in the
+  group that are of the types 'default' or 'mandatory' (by default).
+  (To change this types of packages edit the value of the group_package_types 
+  option in yum.conf.) And they will install any additional dependencies 
+  needed by any of the installing/updating packages.
+
+ * groupremove
+  {{{
+     yum groupremove groupname
+  }}}
+  
+  This will remove all packages, of any type, in the named group. It will also
+  remove any package that depends on any of these packages.
+   
+
+
+== Setting up your own groups in your own repository ==
+
+This process is pretty easy, just two steps:
+ 1. create a file in the groups format used by yum
+ 2. tell createrepo to include that group file in your repository.
+
+
+=== Step 1 ===
+  You can either open a text editor and create the groups xml file manually or you
+  can run the yum-groups-manager command from yum-utils. 
+
+  Run the groups-create command like this:
+    {{{
+       yum-groups-manager -n "My Group" --id=mygroup --save=mygroups.xml --mandatory yum glibc rpm
+    }}}
+
+And you'll end up with a file like this:
+
+{{{
+<!DOCTYPE comps PUBLIC "-//Red Hat, Inc.//DTD Comps info//EN" "comps.dtd">
+<comps>
+  <group>
+   <id>mygroup</id>
+   <default>False</default>
+   <uservisible>True</uservisible>
+   <display_order>1024</display_order>
+   <name>My group</name>
+   <description></description>
+    <packagelist>
+      <packagereq type="mandatory">glibc</packagereq>
+      <packagereq type="mandatory">rpm</packagereq>
+      <packagereq type="mandatory">yum</packagereq>
+    </packagelist>
+  </group>
+</comps>
+}}}
+
+
+=== Step 2 ===
+  To include this in a repository, just tell [http://createrepo.baseurl.org/ createrepo] to use it when making or remaking
+  your repository.
+
+  {{{ 
+     createrepo -g /path/to/mygroups.xml /srv/my/repo
+  }}}
+
+
+
+
+

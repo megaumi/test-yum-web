@@ -1,0 +1,46 @@
+{{{
+#!html
+<h1 style="text-align: center;">
+ <a style="position: absolute; left:  0; font-size: 50%;" href="3.2.21">3.2.21 &larr;</a>
+  What's new in 3.2.22
+ <a style="position: absolute; right: 0; font-size: 50%;" href="3.2.23">&rarr; 3.2.23</a>
+</h1>
+}}}
+
+== User Interface changes ==
+
+ * Allow file provides globs to specify to multiple pkgs: "install '/usr/bin/*'".
+ * Change users from caching to own dirs. Allow them to makecache.
+ * Output message about possible ways forward, when depsolving fails.
+ * Sort lots of things internally, so the fail the same ways across machines.
+ * Skip ftp URLs for hosts we have http URLs for.
+ * Add highlighting for update/etc. showing which pkgs are on disk.
+ * Move some "verbose" messages to be "debug only".
+ * Show groupid in verbose mode of groupinfo.
+ * Don't print a download total time, if there were errors.
+ * Use better "providers resolution" algo. on install by dep.
+ * Output transaction details, in quiet mode, when assumeyes isn't on.
+ * Allow mirrorlist to point to metalink data, and auto change it (must contain the string /metalink).
+
+== Resource improvement changes ==
+
+ * Speedup some repo/configuration stuff, yum list now firmly under a second.
+ * Fixup "preload" when using getCacheDir() cache directories.
+ * Move to 6h default for metadata_expire.
+ * Speedup returnLeafNodes().
+ * Don't limit obsoletes to newest in "yum install", when it doesn't matter.
+
+== API changes ==
+
+ * Allow mirrorlist to point to metalink data.
+ * Complete support for sha256, and make it the default (need hashlib).
+ * Allow getCacheDir() to use truly temporary directories.
+ * Add preconf.
+
+=== Developer stats. ===
+
+{{{
+3.2.22 - 155 commits: Tue Mar 24 16:07:58 2009 -0400
+44 files changed,  6,755 insertions(+),  2,541 deletions(-)
+29 files changed,  1,010 insertions(+),    513 deletions(-) [yum rpmUtils bin *.py]
+}}}

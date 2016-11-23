@@ -1,0 +1,13 @@
+Report back the list of issues with an installed package (like rpm -V pkgname):
+
+{{{
+#!python
+yb = yum.YumBase()
+pkgs = yb.rpmdb.searchNevra(name='yum')
+for pkg in pkgs:
+    errors = pkg.verify()
+    for fn in errors.keys():
+        for prob in errors[fn]:
+            print '%s - %s' % (fn, prob.message)
+
+}}}

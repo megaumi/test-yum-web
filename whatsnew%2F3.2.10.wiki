@@ -1,0 +1,20 @@
+{{{
+#!html
+<h1 style="text-align: center;">
+ <a style="position: absolute; left:  0; font-size: 50%;" href="3.2.9">3.2.9 &larr;</a>
+  What's new in 3.2.10
+ <a style="position: absolute; right: 0; font-size: 50%;" href="3.2.11">&rarr; 3.2.11</a>
+</h1>
+}}}
+
+This was a quick bug fix for [wiki:whatsnew/3.2.9 yum-3.2.9] which was basically broken.
+
+== User Interface changes ==
+
+ *   Add nice help command
+ *   Fix Group MD downloads.
+
+{{{
+3.2.10 -   5 commits: Thu Jan 24 23:50:09 2008 -0500
+ 5 files changed,     71 insertions(+),    13 deletions(-)
+}}}

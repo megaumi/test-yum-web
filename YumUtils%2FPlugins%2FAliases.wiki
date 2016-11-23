@@ -1,0 +1,18 @@
+= aliases =
+This plugin adds the command alias, and parses the aliases config. file to
+enable aliases.
+
+
+== How to install ==
+Use the following command to install the aliases plugin
+{{{
+yum install yum-aliases
+}}}
+
+== Examples ==
+
+== Command line options ==
+
+== Config file options ==
+
+== Notes ==

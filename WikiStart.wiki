@@ -1,0 +1,94 @@
+= Yum Package Manager =
+Yum is an automatic updater and package installer/remover for rpm systems. It automatically computes dependencies and figures out what things should occur to install packages. It makes it easier to maintain groups of machines without having to manually update each one using rpm. Yum has a plugin interface for adding  simple features. Yum can also be used from other python programs via its module inteface.
+
+== Get Yum (3.4.3, or older versions) ==
+    * [http://yum.baseurl.org/download/3.4/yum-3.4.3.tar.gz Download yum-3.4.3.tar.gz]
+    * [wiki:releases See information on all yum (and related tools) releases]
+
+== Get Help ==
+ * Documentation: 
+     * [wiki:Faq FAQ]
+     * [wiki:Guides Yum Guides]
+     * [wiki:YumUtils] - explanation of what the various yum-utils and plugins do
+ * The [http://lists.baseurl.org/mailman/listinfo/yum yum mailing list] is available for help with setup and use problems.
+
+ * We keep the #yum irc channel on [irc://irc.freenode.org irc.freenode.org] for real time help with problems. Please remember to be 
+   patient, we're not always watching irc.
+  
+ * File a [http://yum.baseurl.org/report Ticket]
+        
+== Get Involved ==
+If you're looking at being involved developing on or contributing to yum or any of the related tools.
+
+ * Developers: 
+     * [wiki:#Topullanonymouslyfromgitdothefollowing Get the source]
+     * [wiki:#CommitAccess Commit access]
+     * [wiki:#DevelopmentCommunication Developer communication]
+     * [wiki:#DeveloperDocumentationExamples Developer Documentation and examples]
+ * Translators:
+     * [wiki:#Translation Get involved in translating]
+ * Testing latest versions:
+     * http://copr-fe.cloud.fedoraproject.org/coprs/james/yum-rawhide/ is a rebuild of the latest Fedora rawhide yum for older distros.
+
+=== To pull anonymously from git do the following ===
+  * yum:
+
+    {{{git clone }}}[http://yum.baseurl.org/gitweb?p=yum.git;a=shortlog git://yum.baseurl.org/yum.git]
+
+  * yum-utils:
+
+    {{{git clone }}}[http://yum.baseurl.org/gitweb?p=yum-utils.git;a=shortlog git://yum.baseurl.org/yum-utils.git]
+
+  * yum-metadata-parser:
+
+    {{{git clone }}}[http://yum.baseurl.org/gitweb?p=yum-metadata-parser.git;a=shortlog git://yum.baseurl.org/yum-metadata-parser.git]
+
+  * yum-updatesd:
+
+    {{{git clone }}}[http://yum.baseurl.org/gitweb?p=yum-updatesd.git;a=shortlog git://yum.baseurl.org/yum-updatesd.git]
+
+  * yum-docs:
+
+    {{{git clone }}}[http://yum.baseurl.org/gitweb?p=yum-docs.git;a=shortlog git://yum.baseurl.org/yum-docs.git]
+
+You can click the above git urls to look at a specific module, or use [http://yum.baseurl.org/gitweb/ GitWeb] to browse all git modules.
+
+=== Commit Access ===
+
+If you have commit access you should use ssh. You can access the git trees via:
+
+  {{{git clone ssh://yum.baseurl.org/srv/projects/yum/git/$module_name.git}}}
+
+...however for pretty much everybody there is a very easy way to contribute:
+
+  1. Register to the yum-devel mailing list.
+
+  2. Install git-email package.
+
+  3. git config sendemail.to yum-devel@lists.baseurl.org
+
+  4. Create patches locally and then run "git send-email origin".
+
+== Translation ==
+Use Transifex to submit translations to yum:
+
+{{{
+#!html
+<a target="_blank" style="text-decoration:none; color:black; font-size:66%" href="https://www.transifex.net/projects/p/yum/resource/3-2-x-po-yum-pot/" 
+title="See more information on Transifex.net">Top translations: yum » 3-2-x-po-yum-pot</a><br/>
+<img border="0" src="https://www.transifex.net/projects/p/yum/resource/3-2-x-po-yum-pot/chart/image_png"/><br/>
+<a target="_blank" href="https://www.transifex.net/"><img border="0" src="https://sw.transifex.net/9/static/charts/images/tx-logo-micro.png"/></a>
+}}}
+
+=== Development Communication ===
+  * The [http://lists.baseurl.org/mailman/listinfo/yum-devel yum-devel mailing list] is available for talking about development.
+  * #yum on irc.freenode.org is a good place for discussing development.
+  * To keep an eye on commits to yum and yum-utils please subscribe to the [http://lists.baseurl.org/mailman/listinfo/yum-commits yum-commits mailing list]
+  * Look at the [YumFuture Yum Future page] for things we have planned.
+
+=== Developer Documentation/Examples ===
+ * [wiki:YumCodeSnippets YumCodeSnippets] - simple examples that can get you started.
+ * [wiki:5MinuteExamples Yum Programming in 5 minutes] - a tutorial to show you some of the innnerworkings of yum
+ * [wiki:WritingYumPlugins WritingYumPlugins] - guide to writing yum plugins
+
+For a complete list of local wiki pages, see TitleIndex.

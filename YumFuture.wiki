@@ -1,0 +1,53 @@
+= Things that will probably happen to Yum in the future =
+
+This is a rough list of the significant features that are "planned" for yum, this means that we are planning on these being done (but they aren't done yet, so buyer beware :). We've tried to put them into two groups of difficulty but this is based on how much time it'll take to implement that particular feature.
+
+== 2011 Goals ==
+
+ * '''HARD'''
+   * Adding a "simple" C-API to allow you to install/update/remove/query yum. Simple in this sense is "coverage", as in you should be able to do "simple" things.
+   * Revamp downloading, again. ('''Zdeněk''')
+      * Parallel Downloading.
+      * Background downloading.
+      * External calls for downloads (isolating the install code from the download code etc.).
+
+ * '''MEDIUM'''
+   * General maintainance, this includes all the smaller projects that don't make this list and bug fixes etc. ('''EVERYONE''')
+   * Saving a bunch more data in history: ('''James''')
+     * A lot of the rpmdb/yumdb data, this will almost certainly hang off of pkgtup+checksum
+     * Possible we'll save some updateinfo, Eg. CVEs/BZs/security.
+   * Merged updateinfo, and probably creating some core updateinfo API.
+   * Better support for simple/"blocked" transactions:
+     * Improve load-ts to make it fail if the end rpmdb is different (much more assurance that everything is identical to a test run).
+     * Something like the "updater" plugin (http://james.fedorapeople.org/yum/plugins/updater.py), or yum-safe-update (https://github.com/timlau/YumTools/blob/master/yum-safe-update/yum-safe-update.py).
+   * Documentation of at least our public interfaces. This isn't really hard, but to do fullish coverage it would be time consuming. ('''Nick''')
+
+== Longer term. Goals ==
+
+These are the things people might want us to do for 2011, but are not guaranteed to happen. Some _might_, some are much more unlikely to happen due to time/etc. If you want to see something move from here to the above list, you probably need to speak to someone with the power to make it happen (or do it, and provide us patches :).
+
+ * '''HARD'''
+   * Event notification/querying (traps/events/querying). This might be only '''MEDIUM''', depending on the required features.
+   * Repo. metadata overhaul:
+     * Repo. metadata deltas.
+     * Repo. metadata format change (should get it smaller/less to download).
+   * Repo. detached x509 sigs for pkg signatures, and repomd.xml. This requires significant work in non-yum parts (Eg. distro. rel-eng).
+   * Replacing the depsolver.
+
+ * '''MEDIUM'''
+   * Fix a bunch of problems with deltainfo/presto. (some of these go into other categories as well). ('''Nils''')
+     * Merge presto. into core (move from threads to procs.).
+     * Make presto. deal with installonly ops.
+     * Make presto. deal with non-installed rpms.
+   * Make the user feel the impact of the yum/transaction lock less often, and the user/root split (some of this is tied with background downloads etc.).
+   * Weak dependencies (in repo. metadata). There are multiple parts to this, and some of it requires distro. rel-eng work. This is just for the yum parts (so it might not actually be usable anyway :).
+   * Allow plugins to provide "library" like functions.
+   * Repo. metadata "xz" compression. Possible to switch to XML metadata, for download efficiency.
+   * Python 3 support.
+   * Storage for "verify", so you can "store" config. changes etc. (see the puppet usage etc.)
+   * Installed groups ... groups as objects / whatever.
+   * Show in list_trans/history any pkgtups we didn't find from load-ts/undo/rollback. Maybe add excludes too.
+
+ * '''EASY'''
+   * Maybe re-merge --downloadonly.
+     * Should then be able to add "stats." on downloads.

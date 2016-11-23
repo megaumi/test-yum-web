@@ -1,0 +1,47 @@
+{{{
+#!html
+<h1 style="text-align: center;">
+ <a style="position: absolute; left:  0; font-size: 50%;" href="3.2.16">3.2.16 &larr;</a>
+  What's new in 3.2.17
+ <a style="position: absolute; right: 0; font-size: 50%;" href="3.2.18">&rarr; 3.2.18</a>
+</h1>
+}}}
+
+== User Interface changes ==
+
+ *   Don't die if mirrorlist fetching fails, and we have an old one.
+ *   Do real SQL escaping, so _ and % should dtrt everywhere now.
+ *  Fix list to do matches ignoring case (broken since 3.2.10).
+ *   Make --version much more useful.
+ *   Do total progress resets, so it doesn't go astray on bad downloads.
+ *   Nicer error messages when groups aren't configured.
+ *   Always log in C locale time.
+ *   Wrap output for large packages names in "yum list" output.
+ *  Do specspo lookups for search/provides verbose output.
+ *   Add build/install/commit times to info output.
+ *   Can now import multiple keys from a single gpg key file.
+ *   Tweak provides output to be more useful, and explain *bin/foo lookups.
+ * Allow y/n in all locales as long as there is no overlap.
+ *   Add number of packages in repo to repolist output, and total.
+
+== Resource improvement changes ==
+
+ *   Faster lookup for installed providers.
+ *  Package version only comparison API, remove pkg.EVR usage.
+ *   Do single load package creations for some SQL queries.
+ *  Add searchNames() API to v. quickly convert group names to pkgs.
+ *   Speedup large prco data (needed for 1,000s of kernel provides)
+ *  Turn off SQL "fast" matching if given "lots" of terms.
+
+== API changes ==
+
+ *   postresolve hook runs after installonlyn magic.
+ *  Turn off SQL "fast" matching if given "lots" of terms.
+
+=== Developer stats. ===
+
+{{{
+3.2.17 -  89 commits: Tue Jul 8 17:31:20 2008 -0400
+27 files changed,  2,295 insertions(+), 1,327 deletions(-)
+15 files changed,    676 insertions(+),   292 deletions(-) [main]
+}}}

@@ -1,0 +1,27 @@
+= Problems running without root =
+
+ Rpm/yum assume they are managing an entire single system (unlike, say, Zero Install), and generally assume root like privileges. Here is a list of things to think about if you are trying to break this assumption.
+
+== Problems running rpm without root ==
+
+ * A significant portion of packaged rpm software assumes that scriptlets will be run as root, to do operations like add users or load SELinux policy into the kernel.
+
+ * Rpm assumes root like privileges, so it can change the owner of files and/or permissions, SELinux labels etc.
+
+ * Rpm needs to be able to write to at least the rpm DB files, which are owned by root.
+
+ * Rpm --relocate is generally considered to be unusable.
+
+== Problems running yum without root ==
+
+ * Because of the above rpm problems, yum calls geteuid() and refuses to do certain commands unless that returns 0 (root).
+
+ * Even if you just used the yum API, yum would need to be able to write to at least /var/lib/yum/* /var/log/yum.log and a cache directory. Some rpm API calls will be untested (or at least much less tested) if run as non-root.
+
+ * --installroot is not intended to change the above, the assumption is that you will still be running yum as root.
+
+== Solutions ==
+
+ * Use mock shell, if you want chroot type environments that normal users can create.
+
+ * Use some other packaging format, if you want to be able to "install packages" into $HOME/blah (but there are significant downsides which you should be aware of).

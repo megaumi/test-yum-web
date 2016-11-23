@@ -1,0 +1,19 @@
+
+Open a local package as a yum package object w/o all the rest of the yum stuff:
+{{{
+#!python
+
+# This works in all versions of yum:
+
+import yum.packages
+import rpmUtils.transaction
+ts = rpmUtils.transaction.initReadOnlyTransaction()
+lp = yum.packages.YumLocalPackage(ts, '/home/skvidal/yum-3.2.8-1.noarch.rpm')
+
+# In newer version though you can just do:
+
+import yum.packages
+lp = yum.packages.YumLocalPackage(filename='/home/skvidal/yum-3.2.8-1.noarch.rpm')
+}}}
+
+replace '/home/skvidal/yum-3.2.8-1.noarch.rpm' with the full path to the package

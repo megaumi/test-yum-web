@@ -1,0 +1,105 @@
+{{{
+#!html
+<h1 style="text-align: center;">
+ <a style="position: absolute; left:  0; font-size: 50%;" href="3.2.25">3.2.25 &larr;</a>
+  What's new in 3.2.26
+ <a style="position: absolute; right: 0; font-size: 50%;" href="3.2.27">&rarr; 3.2.27</a>
+</h1>
+}}}
+
+== User Interface changes ==
+
+ * Searching will now search repo. pkgtags.
+ * Add a special $uuid variable to yumvars, can be used in baseurl/etc. to track machines.
+ * Change disk space needed message.
+ * Fix output of "zero sized" packages in listTransaction().
+ * A few minor tweaks to repolist command, main: Now outputs number of excluded packages. 
+ * Sort skip-broken debug output.
+ * Add skip_if_unavailable option to repos. configuration.
+ * Make the "Requires missing" dep. failure text easier to read, and more informative.
+ * Cross arch. downgrades now work.
+ * If we are just doing installs, show the disk space used (nice for sizing chroot's etc.)
+ * Add --rpmverbosity option.
+ * Add "last" prefix argument to history undo/redo. Eg. "yum history redo last-1"
+ * Show last transaction, even if it's incomplete, when using "yum history info". 
+ * Change history DB to only be readable by root, by default.
+ * Add check command.
+ * Add version nogroups sub-command.
+ * Add "clean rpmdb" sub-command.
+ * Process --showduplicates for obsoletes (Eg. list obsoletes).
+ * Show which variable is wrong when we error out of config. parsing.
+ * Print txmbr's as e:v-r instead of weird e-v-r.
+ * Drop status, when just listing disabled/enabled repos. in repolist.
+ * List all obsoleted pkgs. for an obsoleting pkg.
+ * Show releasever in "yum list" if it's not the same as current.
+ * Don't output usage() for bad command errors.
+ * Allow local*/install/downgrade/etc. to use http/ftp/https URLs (like rpm -U).
+ * Add long variants for all options.
+ * Wrap "License" field in info command.
+ * Add --releasever.
+ * Only match non-locale group names if current locale matching failed.
+ * Fix i18n in history.
+ * yum-metadata-parser is now only conditionally in run_with_package_names.
+ * Show script/error output in history.
+
+== Significant bugfixes ==
+
+ * Scriptlet output is now setup correctly again, so history can now store it.
+ * Fix problems with packages that have checksum_type but no checksum_data, in history.
+ * Work around rpm-4.8.* API change (rpm transaction problems).
+ * Cross arch. downgrades now work.
+ * Use a tempfile for rpm transaction output.
+ * Fix "install foo" in multilib_policy=all when there are different versions of foo in different arches.
+ * Fix epoch matching in rpmdb.returnPackages() Aka. "yum list installed"
+ * Fix rpmdb.simpleVersion() using gpg-pubkey packages.
+
+== Resource improvement changes ==
+
+ * Do reget on repo. metadata files, possible due to use of unique filenames.
+ * Speedup a few functions, most noticeable of which is "yum list", via. utf8_ucp_width()
+ * Speedup "small dep. solving, due to caching file requires and conflicts.
+ * Speedup rpmdb pattern matching.
+ * Add code to make "large" dep. solving faster, but turned off (waiting for indexes to be created by y-m-p).
+ * Minor speedup to dep. solving for checkInstall/checkRemove().
+ * Minor speedup in dep. solving for allowedMultipleInstalls().
+ * Add patches for using PackageSack() in tsInfo.
+
+== API changes ==
+
+ * searchGenerator() now always uses the pkgtags searching as well.
+ * Add the pkgtags API.
+ * setCacheDir() now sets .conf.cachedir.
+ * Add a fast option to pkg.verify().
+ * Add a special $uuid variable to yumvars.
+ * Hack the changelog data to fix the sorting problem.
+ * Add force argument to deselectGroup().
+ * Allow setting values for update notices, add add_notice().
+ * Update pgp module, from upstream.
+ * Add rpmdb.check_*() APIs.
+ * Add rpmdb.return_running_packages()
+ * Add transactionCacheFileRequires() and fileRequiresData().
+ * Add transactionResultVersion() and transactionCacheConflictPackages().
+ * Add futureRpmDBVersion().
+ * Never use MD5 for repomd/metalink/etc. checking, even though it was just an extra check.
+ * Change rpmdb.simpleVersion() to possibly return a cached value, and thus. return a string.
+ * Add .ui_from_repo to packages.
+ * Add .ui_nevra to packages.
+ * Add .ui_envra to packages.
+ * Add YumUrlPackage()
+ * Add "re_remote_url()" for testing if a url is "remote".
+ * Add get_running_kernel_version_pkgtup().
+ * Only match non-locale group names if current locale matching failed.
+ * Add returnFileEntries(primary_only=True).
+ * Warn/Deprecate simpleFiles().
+ * Add "base package name installed" compare providers check.
+ * Add .base_package_name to packages.
+ * yum-metadata-parser is now only conditionally in run_with_package_names.
+
+=== Developer stats. ===
+
+{{{
+3.2.26 - 240 commits: Tue Feb 9 14:08:59 2010 -0500
+
+68 files changed,  20,974 insertions(+),   9,784 deletions(-)
+33 files changed,   2,550 insertions(+),     830 deletions(-) [yum rpmUtils bin *.py]
+}}}

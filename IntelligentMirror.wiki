@@ -1,0 +1,3 @@
+= Intelligent Mirror =
+
+This is an external project which tries to makre HTTP proxying for  certain known objects to be "more intelligent". You can get to it here: https://fedorahosted.org/intelligentmirror/

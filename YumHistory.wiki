@@ -1,0 +1,73 @@
+= Yum History Command =
+Near the end of 2009 (or thereabouts) a 'history' command was added to yum. The history command allows an admin to access detailed information on the history of yum transactions that have been run on a system.
+
+Yum started keeping a sqlite db of the information from each and every transaction. The history is organized by transaction id. Each
+time you perform a 'yum' command which changes your system pkgs in someway the history db is updated with this information.
+
+The yum history dbs are normally found in '''/var/lib/yum/history/'''
+
+== Commands ==
+
+ * '''yum history list [all] [pkgname...] [transaction_id...]'''
+   a table of the transactions. It takes two optional arguments. A package name/glob and a transaction id number. 
+   * For example:      
+     * yum history list zsh
+       will return a table of all the transactions where the pkg 'zsh' was modified in some way.
+     * yum history list 1 2 10 
+       will return a table of transactions 1, 2 and 10.   
+     * yum history list all
+       will list every transaction in the history db. This could be A LOT.
+   * with no arguments it will list the most recent 20 transactions.
+   
+
+ * '''yum history info [pkgname...] [transaction_id ...]'''
+   * superset of that 'list' takes but provides detailed information on the transaction. You may best use this piped to 'less'. You can also see a "merged history" of some transactions. For example:
+     * yum history info 1..4
+       will show a single transactions for what would have happened if the first four transactions had been one single transaction.
+   * with no arguments it will display info on the most recent transaction.
+
+ * '''yum history summary [pkgname...] [transaction_id ...]'''
+   * create a summary of what the transactions have done. 
+   * with no arguments it will present a total summary of the current history database.
+   * example:
+    {{{
+        yum history summary glibc
+        Login user                 | Time                | Action(s)        | Altered 
+        -------------------------------------------------------------------------------
+        seth vidal <skvidal>       | Last 3 months       | E, I, O, U       |     1873
+        seth vidal <skvidal>       | Last 6 months       | I, U             |      154
+        seth vidal <skvidal>       | Last year           | Update           |       16
+     }}}
+        The first row of this chart says that in the last 3 months transactions involving the glibc pkg were performed which modified 1873 pkgs and involved Erase, Install, Obsolete and Update operations.
+
+ * '''yum history package-list [pkgname...]'''
+   * show a list of what happened to a particular package, or packages.
+   * For example:
+    {{{
+        # yum history packages-list yum
+        ID     | Action(s)      | Package                                              
+        -------------------------------------------------------------------------------
+            58 | Updated        | yum-3.2.28-3.fc13.noarch                             
+            58 | Update         |     3.2.28-4.fc13.noarch                             
+            39 | Updated        | yum-3.2.27-4.fc13.noarch                             
+            39 | Update         |     3.2.28-3.fc13.noarch                             
+             1 | Install        | yum-3.2.27-4.fc13.noarch     
+    }}}
+
+ * '''yum history undo [transaction_id|'last']'''
+
+    this will attempt to 'undo' what the specified transaction did. In many cases this is possible, but in some cases the packages yum needs to downgrade to are no longer available anywhere and therefore an undo will not succeed.
+ 
+
+ * ''' yum history redo [transaction_id|'last']'''
+
+   this will attempt to perform the exact same transaction specified. This does NOT do a 'reinstall' but simply performing the same 
+   transaction again.
+  
+ * '''yum history new'''
+
+   creates a new yum history db, saving the old one. This command is only to let you keep the size of any single yum history database down in size. When you create a new history db the older transactions will not be accessible unless you move the new history db out of the way. You should rarely ever need to run this command.
+
+
+
+

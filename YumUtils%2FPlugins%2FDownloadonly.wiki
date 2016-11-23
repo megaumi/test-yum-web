@@ -1,0 +1,18 @@
+= downloadonly =
+This plugin adds a --downloadonly flag to yum so that yum will only download
+the packages and not install/update them.
+
+
+== How to install ==
+Use the following command to install the downloadonly plugin
+{{{
+yum install yum-downloadonly
+}}}
+
+== Examples ==
+
+== Command line options ==
+
+== Config file options ==
+
+== Notes ==

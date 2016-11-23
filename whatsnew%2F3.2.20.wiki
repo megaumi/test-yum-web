@@ -1,0 +1,53 @@
+{{{
+#!html
+<h1 style="text-align: center;">
+ <a style="position: absolute; left:  0; font-size: 50%;" href="3.2.19">3.2.19 &larr;</a>
+  What's new in 3.2.20
+ <a style="position: absolute; right: 0; font-size: 50%;" href="3.2.21">&rarr; 3.2.21</a>
+</h1>
+}}}
+
+== User Interface changes ==
+
+ *   Change the downloading metadata text to use the index name.
+ *   Catch repo/mirror errors and revert, if possible.
+ *   Change internal progress bars to be dynamic.
+ *   Cleanup post transaction text.
+ *   React to terminal size changes better for yum output.
+ *   Add metalink support to repos.
+ *   Add "maybe you meant" to update/remove.
+ *   Try and catch plugin exceptions.
+ *   groupremove can now work wihout metadata from the repos. (needs group data)
+ *   Fix grouplist sorting, now uses display_order.
+ *   Dynamically size check-update.
+ *  Sort group package names properly for XML/UI.
+ *   Use calcColumns in groupinfo, list. Tweak list obsoletes output.
+ *   Emit warning and point to yum-complete-transaction, when needed.
+ * Allow special remove only transactions, which don't need network.
+
+== Resource improvement changes ==
+
+ *   Speed up includepkgs.
+ *   Fix corner case of large (1000s) of exclude package names.
+ * Allow special remove only transactions, which don't need network.
+
+== API changes ==
+
+ *    Fix installed size for metadata/local packages.
+ *   Add timestamp_check option, so API users can turn off check.
+ *   Add revision/tags support to the repoMD object.
+ *   Make yb.term.columns be a dynamic property.
+ * Add metalink support to repos.
+ *   checksum() can do multiple algos. on a single file.
+ *   Add ui_ properties to the comps. objects.
+ *   Create calcColumns API for outputting dynamically sized columns of data.
+ *   returnPackages() will now always filter to patterns.
+ * Allow special remove only transactions, which don't need network.
+
+=== Developer stats. ===
+
+{{{
+3.2.20 - 104 commits: Mon Oct 27 16:11:52 2008 -0400
+41 files changed,  7,519 insertions(+), 12,763 deletions(-)
+20 files changed,  1,358 insertions(+),    428 deletions(-) [yum rpmUtils bin *.py]
+}}}

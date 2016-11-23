@@ -1,0 +1,75 @@
+= Where should repodata live, and why =
+
+There have been way too many discussions about putting repodata in places other than as repository metadata. This is a terrible idea, and this article will tell you why:
+
+== Current situation ==
+
+Currently a lot of third party repositories have the bare yum repodata, which is:
+
+ * repomd.xml (index)
+ * primary
+ * filelists
+ * other
+
+...this is the most minimal thing you can generate if you run [createrepo] and all of the above are basically direct conversions of the rpm package headers. However if you look at a significant repo. like Fedora then there are a bunch of extra things:
+
+ * groups
+ * updateinfo
+ * pkgtags
+
+...the interesting thing to note here is that although this data relates to the current package set, '''none of the above''' can be obtained directly from the packages. It's also true that none of the above are created via. [createrepo], they are just added to the repodata via. [modifyrepo].
+
+There is also one "special" piece of data that is not distrubted via. repodata, but via. a package:
+
+ * specspo
+
+...and a lot of the reasons for opposing any new repodata that is distributed outside of the repository metadata is because of experience with this package and the fact it causes nothing but problems.
+
+=== Using repodata, what are the downsides? ===
+
+At a minimum repodata can be considered much like a package, with a single very important difference '''it is always in sync. with the repomd.xml you have'''. This doesn't mean that the repodata needs to be download more often than if it was in a package (Eg. if groups doesn't change when you get a new repomd.xml, yum just keeps the old one). It can also still be used offline, and it is '''always correct'''. There is '''no''' downside to using repodata, from the users point of view.
+
+This is mostly how updateinfo and groups etc. are distributed now, a single file is generated and then after you create the repository you run [modifyrepo] to add the file. There are then low level interfaces in yum (and I assume other packaging solutions) to just say "give me a pointer to the updateinfo repodata". There are also higher level APIs, for current repodata like updateinfo, but they aren't required. So there is '''no''' downside to using repodata, from an application developers point of view.
+
+So if there is no downside to the user or developer, what are the downsides? The best I can come up with are:
+
+ * There is currently working deltarpm infrastructure, but no deltrepodata infrastructure. Adding that infrastructure should be possible, and would help any current and future repodata, but it is work. It's also not obvious how much this would help, esp. compared to just designing any repodata well (Eg. not one giant file).
+ * If a user runs "yum clean metadata", instead of say "yum clean expire-cache", then they'll currently need to re-download any metadata. If a significant number of users are doing this, and we can't stop them, this can be fixed by adding another caching layer.
+ * Although you only need a tiny change in release engineering to use modifyrepo, you don't even need this tiny amount if you use a package. Given the size of the changes needed though, this is tenuous at best.
+
+=== Using packages, what are the downsides? ===
+
+As pointed out above, the big problem with putting metadata in packages is that you have to keep it synchronized with the repository. There is currently no code within yum to do any synchronization of "package metadata" and all of the current pieces of extra repodata have multiple users (and all proposed new repodata I've seen will almost certainly have multiple users). This means that '''even if you could''' keep the repodata synchronized, you'd have to do that from multiple applications instead of it just working from one. However it's very unlikely that you can keep it synchronized, here are the obvious known problems:
+
+ * Nothing is stagnant. This was one of the assumptions for "specspo", when it was first put in a package, is that package summary and descriptions don't change that often. This is somewhat true when you are talking about 2,000 packages that don't change much, but completely divorced from reality when you have 20,000 packages 50% of which will get an update during their lifetime. specspo is always at least slightly wrong currently, and I can't think of any repodata that would fare better.
+
+ * Packages are installed. This means to change the version of repodata you are looking at '''you need to change the system'''. There are many usecases for repodata where this is hard, and some where it's basically impossible including:
+
+   i. anaconda
+   i. preupgrade
+   i. yum --installroot
+   i. yum --releasever
+   i. yum --enablerepo
+   i. repoquery --archlist
+   i. yum blah (esp. as non-root, but even as root there are trust issues)
+   i. any tools to do "intelligent" mirroring.
+   i. any tools to do repository creation based on one or more other repositories.
+
+ ...even in the best case of a GUI application which has direct access to root, '''and''' has some kind of ACL system to distinguish between these "safe" repodata packages and "unsafe" normal packages the choices are still not good. You can either silently install the repodata update (thus. silently altering the users system), or you can choose one of various ways to say "Press this button to install something, which is required for correct operation".
+ To be fair there is one known application (abrt) that does download packages, but does not install them. However I have not seen any proposals to use "packaged repodata" in this manner.
+
+ * There is always more than one repo. As the previous point noted, there are significant problems with repodata in packages when you enable/look-at a repo. for the first time. However there are other edge cases involving multiple repos. like:
+
+   i. yum --disablerepo
+   i. yum clean metadata && yum blah (now the repodata can go _backwards_)
+   i. yum --tmprepo (dito. in GUIs)
+
+== Stop energy ==
+
+Otherwise known as "Why isn't specspo replaced?" The problem is that as soon as there is some solution, esp. for something like repodata that wasn't important enough to be added within the last 10 years+, it doesn't matter how bad the solution is and how much pain it causes over the long term. Specifically talking about specpos agaon, there have been numerous designs to fix it but the fact you have to convert all the code that "understands specspo" (and be "compatible") is a giant barrier to deploying a fix.
+
+To put it another way, if specspo had been blocked, yum would have done fully localized searches years ago. Which is a huge value loss to users.
+
+== Not a single use case ==
+
+There have been some arguments that "Yes, this is bad, but it'll only be used by app. XYZ ... so it's not terrible." but I know of at least 5 different plans for extra repodata, and for the ones yum is less likely to use directly there are 3-4 programs in development that want to use it. If there are any cases I don't know about, then even if they start off being used by a single application ... if they are successful they are highly unlikely to stay used by only a single application.

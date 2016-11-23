@@ -1,0 +1,70 @@
+{{{
+#!html
+<h1 style="text-align: center;">
+ <a style="position: absolute; left:  0; font-size: 50%;" href="3.2.8"></a>
+  What's new in 3.2.9
+ <a style="position: absolute; right: 0; font-size: 50%;" href="3.2.10">&rarr; 3.2.10</a>
+</h1>
+}}}
+
+This release was basically broken, use [wiki:whatsnew/3.2.10 yum-3.2.10] instead which was the bugfix release for this release.
+
+== User Interface changes ==
+
+ *  Group MD downloads, mdpolicy config.
+ *   Add profiling option into main yum command
+ *  Don't search pkg.group and pkg.packager
+ *   Show already downloaded pkg sizes
+ *   Wrap search output
+ *  Add comparison ops to pkgs
+ *   Change str(pkg)
+ *  Make --skip-broken code core
+ *   Print full pkg names/repos in depsolving errors
+ *   Don't add log handlers twice
+ *   Split cmd line options on comma, whitespace, etc.
+ *  Change default metadata_expire from 30 mins to 90 mins.
+ *  Add Seconds option, so you can do mirrorlist_expire = 1d etc.
+ *   Don't run an empty transaction
+ *  Don't accept random stuff for y/N
+ *   Present sqlite errors as repo errors.
+ *   Fix disk space needed results
+ *   Fix gpg user id's
+
+== Resource improvement changes ==
+
+ *  list/info processing direct to SQL
+ *   Skip pkg processing incompat-arch repos
+ *  Don't search pkg.group and pkg.packager
+ *   Cache .lower() result in searches
+ *   Share prco data between pkgs
+ *  Search processing direct to SQL
+ *   Don't use pkg.pkgtup for just pkg.arch
+ *   Don't resort transaction each loop iteration
+ *   Don't create arrays just to read-only iterate
+ *   Cache pkg.pkgtup
+ *   Cache hash(pkg)
+ *   Use pkg.pkgKey instead of pkg.pkgId
+ *   Don't create multiple instances of pkgs
+ *   Obsoletes speed ups
+ *   Don't create all the pkgs, just to get the number of them
+ *   Cache .lower() result in buildPkgRefDict()
+ *   Don't rebuild pkgobjlist, make simplePkgList() based on returnPackages()
+ *  Change default metadata_expire from 30 mins to 90 mins.
+
+== API changes ==
+
+ *  Group MD downloads, mdpolicy config.
+ *  list/info processing direct to SQL
+ *  Add comparison ops to pkgs
+ *   Add allowed ranges to Int config. options
+ *  Make --skip-broken code core
+ *  Search processing direct to SQL
+ *  Add Seconds option, so you can do mirrorlist_expire = 1d etc.
+
+=== Developer stats. ===
+
+{{{
+3.2.9  - 135 commits: Thu Jan 24 17:29:28 2008 -0500
+33 files changed,  2,964 insertions(+),   801 deletions(-)
+24 files changed,  1,572 insertions(+),   790 deletions(-) [main]
+}}}

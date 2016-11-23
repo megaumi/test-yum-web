@@ -1,0 +1,20 @@
+= filter-data =
+This plugin adds the options --filter- vendors, groups, packagers, licenses,
+arches, committers, buildhosts, baseurls, package-sizes, archive-sizes and
+installed-sizes. Note that each package must match at least one pattern/range in
+each category, if any were specified.
+
+
+== How to install ==
+Use the following command to install the filter-data plugin
+{{{
+yum install yum-filter-data
+}}}
+
+== Examples ==
+
+== Command line options ==
+
+== Config file options ==
+
+== Notes ==

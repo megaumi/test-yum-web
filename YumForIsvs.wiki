@@ -1,0 +1,70 @@
+= Yum For ISVs =
+
+So, you're shipping a product as an rpm and you want to keep it updated. This page will help you with the basics to do just that.
+We make a few assumptions:
+
+ * Your product/package is not being shipped in the linux distros themselves
+ * Your product/package is being packaged in the rpm format
+ * You have a website where you can host your package and a yum repo - any simple http server will do
+ * You have a linux system upon which you can run [http://createrepo.baseurl.org createrepo]
+
+If you don't have the above then get them and come back.
+
+
+Yum knows to look for updates for packages by knowing about the package repositories they live in. A package repository is a collection of packages and the accompanying metadata about those packages stored in a specific format. Yum looks at the repositories that are listed in its repos.d configuration directory (normally /etc/yum.repos.d/). It checks to see if the repositories have new repodata. If they do then it downloads this repodata and looks to see if the repository has a newer version of any package the system has installed.
+
+Makes sense?
+
+
+== Use Case ==
+The general use case that we're expecting for packages/products not included with the linux distro is:
+
+ * user finds a product via websearch or reference on a website.
+ * user goes to product websites and buys/accesses the product in an rpm package.
+ * user installs rpm package (ideally using yum but not necessarily)
+ * user then would like to automatically receive updates whenever the package is updated using their normal updater, yum.
+
+
+== Here's what you need to do ==
+ * in the package the user is likely to download include a .repo file in /etc/yum.repos.d/ - normally it will be named after the company or product.
+ * the .repo file should be in the yum repo format which is quite simple.
+
+  Here's an example for a fictional widgetizer product, comments precede each line.
+  {{{
+     # any word will do as long as it uniquely identifies your repository. No spaces or 'odd' characters.
+     [widgetizer] 
+     # completely free form text field.
+     name = Widgetizer from Almagamted Widgets, Inc: $basearch 
+     # path where your repository can be found - this is the path where you find the 'repodata' dir made by createrepo
+     baseurl = http://yum.widgetizer.com/$basearch/ 
+     # enable the repository
+     enabled = 1 
+     # path to your gpg public key so yum can import it.
+     gpgkey = http://yum.widgetizer.com/widgetizer.public_key.gpg 
+     # enable gpg checking of your packages.
+     gpgcheck = 1 
+  }}}
+
+
+   $basearch is expanded out by yum to match the 'base architecture' for the system this file is installed on. base architecture is the way we refer to families of cpu
+   architectures. Yum derives this value from your architecture (uname -m). For example if your architecture is i686 your basearch will be i386. If your arch is ia32e 
+   your basearch  will be x86_64.
+   
+
+ * the above file should be included in the rpm your user downloaded. If this file is in /etc/yum.repos.d then yum will now know about your repository.
+ * whenever yum is used it will check your repository for updates.
+
+That's the basics.
+
+== How to setup your repository ==
+
+The gist of it is:
+
+ * put all the packages you'd like in the repository in a directory (or a set of subdirectories)
+ * run createrepo on the path you would like to make into a repository
+ * anytime you add/remove/change a package in that path run createrepo again.
+ 
+For more details on how to best run createrepo please see the RepoCreate guide on this wiki.
+
+
+Let us know if you have any additional questions at yum@lists.baseurl.org.

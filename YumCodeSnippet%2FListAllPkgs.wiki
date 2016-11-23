@@ -1,0 +1,10 @@
+List all pkgs, in all available versions (smaller than the "[YumCodeSnippet/YumList yum list]" snippet).
+
+{{{
+#!python
+
+yb = yum.YumBase()
+yb.conf.cache = 1
+for pkg in sorted(yb.pkgSack.returnPackages()):
+    print pkg, pkg.repo
+}}}

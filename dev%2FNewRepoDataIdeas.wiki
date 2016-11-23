@@ -1,0 +1,91 @@
+= Ideas for New Repodata =
+
+== problems and goals ==
+The current metadata has helped make searching the information much more reasonable - however, it suffers from the problem that as the repos grow in number of pkgs users are forced to download massively large chunks of data they, in fact, do not NEED.
+
+One of the goals of this discussion is to see if we can strike a happy medium between huge chunks of data and searchability.
+
+== use cases ==
+ * yum install something
+   * yum needs to see conflicts/obsoletes, pkginfo and the pkg specific requires ... at a minimum.
+   * If it requires something not known then all "provides" will be needed.
+   * and any files require file data.
+ * yum update/downgrade/distro-sync
+   * The same as "yum install"
+ * yum list pkgglob
+   * needs to see pkginfo
+ * yum list updates
+   * needs to see pkginfo
+ * yum check-update
+   * needs to see pkginfo + obsoletes
+ * yum provides something
+   * needs to see pkginfo + provides. And if the filename glob matches than ALL of the filelists
+ * yum search
+   * pkginfo + localized summary+description data, (and currently) all provides.
+
+depsolving will need, filelists per-pkg or a subset of file-reqs files.
+
+others?
+== filelists - break them up ==
+filelists broken out by paths so you don't have to download a huge glop of the complete filelists just to find out who owns /foo/baz
+
+possible ways to break up the files - info from rawhide as of june 2010:
+{{{
+2.4 million files total in pkgs in rawhide
+2.3 million of those are in /usr
+1.8 million of those are /usr/share
+  Top 3 dirs by file count under /usr/share:
+   533046 /usr/share/doc
+   120555 /usr/share/javadoc
+   105591 /usr/share/icons
+45 file-requires requiring something in /usr/share
+none of those file-requires are in the top 3 /usr/share dirs
+    - most of them are fonts.
+}}}
+
+so in general we're downloading 75% more files for a filereq check than
+we'll EVER need.
+
+So if we break the files up by 'top level dir' + 3 layers deep for /usr/*/*/
+then we'll have reduced the number unnecessary file-list downloads by about 75%
+
+
+== complete repodata per-pkg ==
+ - in a file or a directory of files so I can grab all of a certain kind of metadata for ONLY one pkg
+
+== translations ==
+- provide a way  to break out summary/description into a structure that supports translations.
+
+
+== potential structure ==
+And some more specific ideas:
+
+repodata/
+        repomd.xml <-- same as before - the index for everything else - but making sure not to use any of the existing data type attributes
+
+        packagelist.sqlite contains:
+        {{{
+           name, arch, epoch-ver-rel, 
+           checksum, 
+           sourcerpm
+           url, 
+           license, 
+           size (package, installed), 
+           location (baseurl, mirrorlist(optional), href), 
+           group, 
+           header byte-ranges?(maybe), 
+           has_conflicts?, 
+           has_obsoletes?, 
+           is_signed?, 
+           key_fingerprint?, 
+           location-style-path to per-pkg metadata and checksum.
+        }}}
+        summary/description.xml
+                LANG.sqlite
+
+        provides.sqlite <-- provides: providename + flags + evr
+        req_conf_obs.sqlite <-- putting requires,conflicts and obsoletes in on db - multiple tables b/c you need them all at the same time
+        files_by_path.xml <-- index file to point to the files-by-path
+              path_it_holds + filename + checksum, per file
+
+...note that it may be better to make "req_conf_obs" 3 files, so that some updates can reuse older versions (Eg. just requires changes).

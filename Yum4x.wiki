@@ -1,0 +1,12 @@
+= Features/Goals for Yum 4.X =
+
+ * API break
+ * New repodata format: [wiki:dev/NewRepoDataIdeas]
+ * Delta-able repodata
+ * x509 Certs/sigs for repo and pkg verification
+ * separate-process downloader - multiple-files-at-a-time downloader
+ * depsolver changes? (need specifics)
+ * Detached package signatures
+ * yum plugins be able to register objects available to api callers of yum. Ie: yum.plugins.pluginname.method() being available from callers
+ * deal w/plugin type_INTERACTIVE for guis vs for clis
+ * 

@@ -1,0 +1,21 @@
+== Yum Guides ==
+
+ * RepoCreate -- How to setup your own repositories
+ * YumCommands -- Basic yum commands
+ * RpmCommands -- Useful rpm commands
+ * RepoQuery -- Useful instructions on using Repoquery from yum-utils
+ * YumHistory -- Explanation of the yum history command and how to use it
+ * [wiki:YumDB YumDB] -- Explanation of the yumdb, what information is in there and how to access/edit it.
+ * YumGroups -- Using yum groups
+ * YumMultipleMachineCaching -- Lowering bandwith usage by caching data over multiple machines
+ * RepoTools -- Managing repositories
+ * YumPackageUpdates -- What happens in a package update, and how you can control it
+ * YumForIsvs -- If you're shipping a package and want to keep it updated by yum, how to do that.
+
+Docs that need work:
+
+ * YumUtilsGuides -- Guides related to yum-utils
+ * YumAutomation -- Keeping your system updated automatically
+
+
+
